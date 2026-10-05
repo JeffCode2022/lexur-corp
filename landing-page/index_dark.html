@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LEXUR SOFTWARE SOLUTIONS — Arquitectura e Ingeniería de Software</title>
+  <meta name="description" content="Creamos soluciones, impulsamos tu futuro. Soluciones de software de alta calidad, arquitectura en la nube, ciberseguridad e inteligencia artificial para múltiples rubros e industrias.">
+  <link rel="icon" type="image/png" href="./assets/lexur_brand_icon_clean.png">
+  
+  <!-- Fonts: Plus Jakarta Sans, Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- GSAP & Plugins -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Tailwind Custom Config with Lexur Brand Tokens -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              blue: '#2563EB',         /* Official brand blue */
+              blueLight: '#3B82F6',
+              blueGlow: '#60A5FA',
+              purple: '#7C3AED',       /* Official brand purple */
+              purpleLight: '#8B5CF6',
+              dark: '#0D1117',         /* Official brand slate dark */
+              black: '#05070B',        /* Tesla / Apple deep OLED black */
+              canvas: '#000000',
+              surface1: '#0B0F17',
+              surface2: '#111722',
+              surface3: '#182030',
+              borderHairline: 'rgba(255, 255, 255, 0.08)',
+              borderSpecular: 'rgba(255, 255, 255, 0.16)'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Outfit"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --brand-blue: #2563EB;
+      --brand-purple: #7C3AED;
+      --brand-dark: #0D1117;
+      --brand-black: #05070B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #05070B;
+      color: #F8FAFC;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::selection {
+      background-color: #2563EB;
+      color: #FFFFFF;
+    }
+
+    /* Tesla Hardware Cursor */
+    @media (pointer: fine) {
+      body {
+        cursor: none;
+      }
+      a, button, input, select, textarea, [role="button"] {
+        cursor: none;
+      }
+    }
+
+    #teslaCursorDot {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 6px;
+      background: #FFFFFF;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(37, 99, 235, 0.6);
+    }
+
+    #teslaCursorRing {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 36px;
+      height: 36px;
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99998;
+      transform: translate(-50%, -50%);
+      transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+                  height 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+                  border-color 0.28s, 
+                  background-color 0.28s;
+      backdrop-filter: blur(1px);
+    }
+
+    .cursor-hover-active #teslaCursorDot {
+      width: 8px;
+      height: 8px;
+      background: #3B82F6;
+      box-shadow: 0 0 14px #3B82F6, 0 0 24px #7C3AED;
+    }
+
+    .cursor-hover-active #teslaCursorRing {
+      width: 56px;
+      height: 56px;
+      border-color: rgba(59, 130, 246, 0.65);
+      background-color: rgba(37, 99, 235, 0.08);
+    }
+
+    /* Ambient Pointer Spotlight */
+    #ambientSpotlight {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 550px;
+      height: 550px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.07) 0%, rgba(124, 58, 237, 0.03) 40%, transparent 70%);
+      opacity: 0.85;
+      mix-blend-mode: screen;
+      will-change: transform;
+    }
+
+    /* Liquid Glass Aesthetic */
+    .liquid-glass {
+      background: rgba(13, 17, 23, 0.68);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border-radius: 28px;
+      box-shadow: 
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+                  box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+                  background 0.35s ease;
+    }
+
+    .liquid-glass:hover {
+      background: rgba(17, 24, 38, 0.82);
+      transform: translateY(-4px);
+      box-shadow: 
+        inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.22),
+        inset 0 0 0 1px rgba(59, 130, 246, 0.2),
+        0 24px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+
+    .liquid-glass-pill {
+      background: rgba(13, 17, 23, 0.78);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border-radius: 9999px;
+      box-shadow: 
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.14),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .liquid-glass-modal {
+      background: rgba(11, 15, 22, 0.94);
+      backdrop-filter: blur(40px) saturate(200%);
+      -webkit-backdrop-filter: blur(40px) saturate(200%);
+      border-radius: 32px;
+      box-shadow: 
+        inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.2),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 30px 80px -20px rgba(0, 0, 0, 0.85);
+    }
+
+    /* Apple-Style Inverted Primary Button */
+    .btn-apple-primary {
+      background: #FFFFFF;
+      color: #05070B;
+      font-weight: 700;
+      border-radius: 9999px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 18px rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-apple-primary:hover {
+      background: #F1F5F9;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 26px rgba(255, 255, 255, 0.35);
+    }
+
+    .btn-apple-primary:active {
+      transform: scale(0.98);
+    }
+
+    /* Subtle Micro-Glints */
+    .pinpoint-glint {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.9), 0 0 16px 4px rgba(37, 99, 235, 0.7);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .liquid-glass:hover .pinpoint-glint {
+      opacity: 1;
+    }
+
+    /* Marquee Infinite Loop */
+    @keyframes partnerMarquee {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-50%, 0, 0); }
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: partnerMarquee 38s linear infinite;
+      will-change: transform;
+    }
+
+    .marquee-track:hover {
+      animation-play-state: paused;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #05070B;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1E293B;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+
+    .terminal-line {
+      border-left: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .terminal-line:hover {
+      border-left-color: #3B82F6;
+      background: rgba(37, 99, 235, 0.05);
+    }
+  </style>
+</head>
+<body class="relative min-h-screen">
+
+  <div id="teslaCursorDot" aria-hidden="true"></div>
+  <div id="teslaCursorRing" aria-hidden="true"></div>
+  <div id="ambientSpotlight" aria-hidden="true"></div>
+
+  <canvas id="bgCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-60"></canvas>
+
+  <!-- ================= TOP FLOATING NAVIGATION ================= -->
+  <header class="fixed top-5 left-0 right-0 z-50 flex justify-center px-4 sm:px-6">
+    <nav class="liquid-glass-pill px-5 sm:px-7 py-3 flex items-center justify-between gap-4 sm:gap-8 w-full max-w-5xl transition-all duration-300">
+      
+      <!-- Brand Logo -->
+      <a href="#hero" class="flex items-center gap-3 group">
+        <div class="relative w-8 h-8 flex items-center justify-center">
+          <img src="./assets/lexur_brand_icon_clean.png" alt="LEXUR Icon" class="w-7 h-auto object-contain transition-transform duration-300 group-hover:scale-110 filter drop-shadow-[0_0_12px_rgba(37,99,235,0.6)]">
+        </div>
+        <div class="flex flex-col text-left">
+          <span class="font-display font-extrabold text-lg tracking-wider text-white leading-none">LEXUR</span>
+          <span class="font-mono text-[9px] uppercase tracking-widest text-slate-400 font-semibold leading-tight mt-0.5">Software Solutions</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <div class="hidden lg:flex items-center gap-7 text-xs font-semibold text-slate-300">
+        <a href="#hero" data-i18n="navHome" class="hover:text-white transition-colors duration-200">Inicio</a>
+        <a href="#services" data-i18n="navServices" class="hover:text-white transition-colors duration-200">Servicios</a>
+        <a href="#sectors" data-i18n="navSectors" class="hover:text-white transition-colors duration-200">Rubros & Soluciones</a>
+        <a href="#architecture" data-i18n="navArchitecture" class="hover:text-white transition-colors duration-200">Arquitectura</a>
+        <a href="#telemetry" data-i18n="navTelemetry" class="hover:text-white transition-colors duration-200">Métricas & SLA</a>
+        <a href="#facilities" data-i18n="navFacilities" class="hover:text-white transition-colors duration-200">Sedes & Hubs</a>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center bg-[#0B0F17] rounded-full p-0.5 text-[11px] font-mono font-bold tracking-wider shadow-inner" role="group" aria-label="Selector de idioma">
+          <button id="langBtnEs" onclick="setLanguage('es')" class="px-2.5 py-1 rounded-full transition-all duration-200 bg-brand-blue text-white shadow-xs font-bold" aria-label="Cambiar a Español">ES</button>
+          <button id="langBtnEn" onclick="setLanguage('en')" class="px-2.5 py-1 rounded-full transition-all duration-200 text-slate-400 hover:text-white font-bold" aria-label="Switch to English">EN</button>
+        </div>
+
+        <button onclick="openProjectDrawer()" data-i18n="navCta" class="btn-apple-primary text-xs font-bold px-5 py-2.5 whitespace-nowrap">
+          Iniciar Proyecto
+        </button>
+
+        <button onclick="toggleMobileMenu()" class="lg:hidden w-8 h-8 rounded-full flex items-center justify-center text-slate-300 hover:text-white bg-slate-900/60" aria-label="Abrir Menú">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="fixed inset-0 z-40 bg-black/90 backdrop-blur-2xl hidden flex-col justify-center px-8 text-center transition-all duration-300">
+    <div class="flex flex-col gap-6 text-lg font-display font-semibold text-slate-200">
+      <a href="#hero" onclick="toggleMobileMenu()" data-i18n="navHome">Inicio</a>
+      <a href="#services" onclick="toggleMobileMenu()" data-i18n="navServices">Servicios</a>
+      <a href="#sectors" onclick="toggleMobileMenu()" data-i18n="navSectors">Rubros & Soluciones</a>
+      <a href="#architecture" onclick="toggleMobileMenu()" data-i18n="navArchitecture">Arquitectura</a>
+      <a href="#telemetry" onclick="toggleMobileMenu()" data-i18n="navTelemetry">Métricas & SLA</a>
+      <a href="#facilities" onclick="toggleMobileMenu()" data-i18n="navFacilities">Sedes & Hubs</a>
+      <div class="pt-6">
+        <button onclick="toggleMobileMenu(); openProjectDrawer();" data-i18n="navCta" class="btn-apple-primary text-sm font-bold px-8 py-3.5 w-full">
+          Iniciar Proyecto
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main class="relative z-10">
+
+    <!-- ================= HERO SECTION (ZERO BUILDINGS, PURE SOFTWARE ENGINEERING) ================= -->
+    <section id="hero" class="relative pt-32 sm:pt-40 pb-16 overflow-hidden">
+      
+      <div class="max-w-7xl mx-auto px-6 w-full flex flex-col items-center text-center">
+        
+        <!-- Status Pill -->
+        <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full liquid-glass-pill mb-6 sm:mb-8 text-[11px] font-mono font-medium text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-brand-blueLight font-semibold">LEXUR CORE v4.8</span>
+          <span class="text-slate-600">/</span>
+          <span data-i18n="heroStatus">SISTEMA DISTRIBUIDO OPERACIONAL</span>
+          <span class="text-slate-600">/</span>
+          <span class="text-slate-400">LATENCIA: 1.2ms</span>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-extrabold tracking-tight text-white max-w-5xl leading-[1.04] mb-6">
+          <span data-i18n="heroTitlePart1">Ingeniería de software</span><br>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400" data-i18n="heroTitlePart2">sin concesiones.</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl font-normal leading-relaxed mb-8 sm:mb-10" data-i18n="heroSubtitle">
+          Creamos soluciones, impulsamos tu futuro. Diseñamos plataformas digitales, sistemas en la nube e inteligencia aplicada con la precisión y el rigor de los mejores sistemas del planeta.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-4 mb-16">
+          <button onclick="openProjectDrawer()" data-i18n="heroCtaPrimary" class="btn-apple-primary px-8 py-4 text-sm font-bold flex items-center gap-2">
+            <span>Iniciar Consulta de Proyecto</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </button>
+          
+          <a href="#services" data-i18n="heroCtaSecondary" class="liquid-glass-pill px-7 py-4 text-sm font-bold text-slate-300 hover:text-white flex items-center gap-2 transition-colors">
+            <span>Explorar Servicios</span>
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </a>
+        </div>
+
+        <!-- Software Architecture Console Stage -->
+        <div id="architecture" class="w-full max-w-5xl liquid-glass p-1.5 sm:p-2.5 rounded-[32px] shadow-2xl relative group">
+          <div class="pinpoint-glint top-3 left-4"></div>
+          <div class="pinpoint-glint top-3 right-4"></div>
+
+          <div class="bg-[#090D14] rounded-[26px] p-5 sm:p-7 text-left border border-white/5">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-5 mb-5 border-b border-white/5">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
+                <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
+                <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
+                <span class="ml-3 font-mono text-xs text-slate-400 font-semibold flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-brand-blueLight" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                  lexur-distributed-engine.cluster.io
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1 bg-[#101622] rounded-full p-1 text-[11px] font-mono text-slate-400">
+                <button id="tabBtnCore" onclick="switchConsoleTab('core')" class="px-3 py-1 rounded-full bg-brand-blue text-white font-bold transition-all" data-i18n="tabCore">Core Transaccional</button>
+                <button id="tabBtnCloud" onclick="switchConsoleTab('cloud')" class="px-3 py-1 rounded-full hover:text-white transition-all" data-i18n="tabCloud">Malla Cloud</button>
+                <button id="tabBtnAi" onclick="switchConsoleTab('ai')" class="px-3 py-1 rounded-full hover:text-white transition-all" data-i18n="tabAi">Motor IA</button>
+                <button id="tabBtnSecurity" onclick="switchConsoleTab('security')" class="px-3 py-1 rounded-full hover:text-white transition-all" data-i18n="tabSecurity">Zero-Trust</button>
+              </div>
+
+              <div class="hidden sm:flex items-center gap-2 font-mono text-[11px] text-emerald-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>TPS: 148,290 req/s</span>
+              </div>
+            </div>
+
+            <!-- Tab: Core -->
+            <div id="viewCore" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+              <div class="lg:col-span-7 font-mono text-xs text-slate-300 leading-relaxed space-y-2">
+                <div class="flex items-center gap-2 text-slate-500 text-[11px] pb-1">
+                  <span>// LEXUR ARCHITECTURE RUNTIME · GO 1.24 + RUST FFI</span>
+                </div>
+                <div class="terminal-line pl-2 text-blue-300"><span class="text-purple-400 font-bold">package</span> main</div>
+                <div class="terminal-line pl-2 text-slate-300"><span class="text-purple-400 font-bold">import</span> ( <span class="text-emerald-400">"lexur.cloud/cluster/v4"</span>; <span class="text-emerald-400">"lexur.security/vault"</span> )</div>
+                <div class="terminal-line pl-2 text-slate-300"><span class="text-blue-400 font-bold">func</span> <span class="text-yellow-300 font-bold">ExecutePipeline</span>(ctx context.Context, order *Transaction) error {</div>
+                <div class="terminal-line pl-6 text-slate-400">span := tracer.Start(ctx, <span class="text-emerald-400">"lexur.acid_process"</span>)</div>
+                <div class="terminal-line pl-6 text-slate-300">verified := vault.ValidateZeroTrustSignature(order.IdentityToken)</div>
+                <div class="terminal-line pl-6 text-blue-400"><span class="text-purple-400 font-bold">if</span> !verified { <span class="text-purple-400 font-bold">return</span> ErrUnauthorized }</div>
+                <div class="terminal-line pl-6 text-emerald-400"><span class="text-purple-400 font-bold">return</span> cluster.DispatchReplicated(order, cluster.P99LatencyBudget(2*time.Millisecond))</div>
+                <div class="terminal-line pl-2 text-slate-300">}</div>
+                <div class="pt-2 text-[11px] text-slate-500 flex items-center gap-3">
+                  <span class="text-emerald-400">✓ Compilado bare-metal</span>
+                  <span>·</span>
+                  <span>Sin jitter de GC</span>
+                  <span>·</span>
+                  <span class="text-brand-blueLight">Memoria: 14.2 MB</span>
+                </div>
+              </div>
+
+              <!-- Telemetry Widget -->
+              <div class="lg:col-span-5 bg-[#0D121B] rounded-2xl p-5 border border-white/5 flex flex-col justify-between gap-4">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs uppercase tracking-wider text-slate-400 font-bold" data-i18n="hudTitle">Telemetría en Vivo</span>
+                  <span class="font-mono text-[10px] text-slate-500">POLL: 100ms</span>
+                </div>
+
+                <div class="space-y-3">
+                  <div>
+                    <div class="flex justify-between text-xs font-mono mb-1">
+                      <span class="text-slate-400" data-i18n="metricThroughput">Rendimiento Transaccional</span>
+                      <span class="text-white font-bold" id="hudThroughput">148,290 req/s</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                      <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 w-[88%] rounded-full"></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="flex justify-between text-xs font-mono mb-1">
+                      <span class="text-slate-400" data-i18n="metricP99">Latencia P99 Edge</span>
+                      <span class="text-emerald-400 font-bold" id="hudLatency">0.82 ms</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                      <div class="h-full bg-emerald-500 w-[96%] rounded-full"></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="flex justify-between text-xs font-mono mb-1">
+                      <span class="text-slate-400" data-i18n="metricReliability">Fiabilidad del Cluster</span>
+                      <span class="text-purple-400 font-bold">99.999% SLA</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                      <div class="h-full bg-purple-500 w-[99%] rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pt-2 flex items-center justify-between border-t border-white/5 text-[11px] font-mono">
+                  <button onclick="simulateTelemetrySpike()" class="text-brand-blueLight hover:text-white font-bold flex items-center gap-1.5 transition-colors">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <span data-i18n="btnStressTest">Probar Carga en Vivo</span>
+                  </button>
+                  <span class="text-slate-500">Zonas: 6 Activas</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Cloud -->
+            <div id="viewCloud" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+              <div class="bg-[#0D121B] rounded-xl p-4 border border-white/5">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-mono text-xs text-white font-bold">US-EAST (Virginia)</span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                </div>
+                <p class="text-xs text-slate-400 mb-3">Kubernetes Multi-Zone con escalado automático instantáneo y Anycast DNS.</p>
+                <div class="font-mono text-[11px] text-slate-500">Carga: 24% · Latencia: 4ms</div>
+              </div>
+              <div class="bg-[#0D121B] rounded-xl p-4 border border-white/5">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-mono text-xs text-white font-bold">EU-CENTRAL (Frankfurt)</span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                </div>
+                <p class="text-xs text-slate-400 mb-3">Cumplimiento estricto GDPR y réplica sincrónica de bases Postgres ACID.</p>
+                <div class="font-mono text-[11px] text-slate-500">Carga: 38% · Latencia: 6ms</div>
+              </div>
+              <div class="bg-[#0D121B] rounded-xl p-4 border border-white/5">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-mono text-xs text-white font-bold">SA-BRAZIL (São Paulo)</span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                </div>
+                <p class="text-xs text-slate-400 mb-3">Punto de enlace directo para tráfico bancario y transaccional en LATAM.</p>
+                <div class="font-mono text-[11px] text-slate-500">Carga: 19% · Latencia: 2ms</div>
+              </div>
+            </div>
+
+            <!-- Tab: AI -->
+            <div id="viewAi" class="hidden font-mono text-xs space-y-3 pt-2">
+              <div class="bg-[#0D121B] rounded-xl p-4 border border-white/5 space-y-2">
+                <div class="text-purple-400 font-bold">// LEXUR AGENTIC REASONING PIPELINE</div>
+                <div class="text-slate-300">Model: <span class="text-white font-semibold">Lexur-Enterprise-RAG v3 (Local Weights + Zero Leaks)</span></div>
+                <div class="text-slate-400">Embeddings: 1536 dim / Milvus Vector DB (Latency: 1.4ms)</div>
+                <div class="text-emerald-400">Autonomous Tasks: Facturación electrónica, conciliación multi-banco, detección de fraude</div>
+                <div class="text-slate-500 text-[11px]">Consumo GPU: TensorRT-LLM 99.4% eficiencia de memoria</div>
+              </div>
+            </div>
+
+            <!-- Tab: Security -->
+            <div id="viewSecurity" class="hidden font-mono text-xs space-y-3 pt-2">
+              <div class="bg-[#0D121B] rounded-xl p-4 border border-white/5 space-y-2">
+                <div class="text-emerald-400 font-bold">// ZERO-TRUST CRYPTOGRAPHIC ENGINE</div>
+                <div class="text-slate-300">Cifrado en tránsito: <span class="text-white">TLS 1.3 + ChaCha20-Poly1305 / AES-256-GCM</span></div>
+                <div class="text-slate-300">Cifrado en reposo: <span class="text-white">Hardware KMS FIPS 140-2 Nivel 3</span></div>
+                <div class="text-slate-400">Auditoría: SOC 2 Tipo II en curso · 0 vulnerabilidades abiertas en CodeQL</div>
+                <div class="text-slate-500 text-[11px]">Protección DDoS: 250 Tbps mitigación perimetral activa</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= PARTNERS & ENTERPRISE INTEGRATIONS ================= -->
+    <section id="partners" class="py-12 bg-black/60 border-y border-white/5 relative z-20 overflow-hidden" aria-label="Tecnologías y Partners">
+      <div class="max-w-7xl mx-auto px-6 mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <span class="font-mono text-[10px] uppercase tracking-widest text-slate-400 font-bold block" data-i18n="partnersOverline">01 / ECOSISTEMA TECNOLÓGICO</span>
+          <h2 class="text-xl sm:text-2xl font-display font-extrabold text-white" data-i18n="partnersTitle">Integrado con Líderes Globales</h2>
+        </div>
+        <div class="flex items-center gap-2 font-mono text-xs text-slate-400">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span data-i18n="partnersIntegrations">16 PLATAFORMAS NATIVAS</span>
+        </div>
+      </div>
+
+      <div class="relative w-full overflow-hidden select-none py-2">
+        <div class="pointer-events-none absolute left-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-r from-[#05070B] to-transparent"></div>
+        <div class="pointer-events-none absolute right-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-l from-[#05070B] to-transparent"></div>
+
+        <div class="marquee-track flex items-center gap-4">
+          <div class="liquid-glass-pill px-5 py-2.5 flex items-center gap-3 text-slate-300 hover:text-white transition-all cursor-pointer" onclick="showPartnerDetail('Google Cloud', 'Cloud Run, Kubernetes & BigQuery')">
+            <svg class="w-5 h-5 fill-current text-blue-400" viewBox="0 0 24 24"><path d="M12.19 2.38a9.344 9.344 0 0 0-9.234 6.893c.053-.02-.055.013 0 0-3.875 2.551-3.922 8.11-.247 10.941l.006-.007-.007.03a6.717 6.717 0 0 0 4.077 1.356h5.173l.03.03h5.192c6.687.053 9.376-8.605 3.835-12.35a9.365 9.365 0 0 0-2.821-4.552l-.043.043.006-.05A9.344 9.344 0 0 0 12.19 2.38z"/></svg>
+            <span class="text-xs font-bold tracking-tight">Google Cloud</span>
+          </div>
+          <div class="liquid-glass-pill px-5 py-2.5 flex items-center gap-3 text-slate-300 hover:text-white transition-all cursor-pointer" onclick="showPartnerDetail('AWS', 'Lambda, ECS & GovCloud')">
+            <svg class="w-5 h-5 fill-current text-amber-400" viewBox="0 0 24 24"><path d="M6.763 10.036c0 .296.032.535.088.71.064.176.144.368.256.576.04.063.056.127.056.183 0 .08-.048.16-.152.24l-.503.335a.383.383 0 0 1-.208.072c-.08 0-.16-.04-.239-.112a2.47 2.47 0 0 1-.287-.375 6.18 6.18 0 0 1-.248-.471c-.622.734-1.405 1.101-2.347 1.101-.67 0-1.205-.191-1.596-.574-.391-.384-.59-.894-.59-1.533 0-.678.239-1.23.726-1.644.487-.415 1.133-.623 1.955-.623.272 0 .551.024.846.064.296.04.6.104.918.176v-.583c0-.607-.127-1.03-.375-1.277-.255-.248-.686-.367-1.3-.367-.28 0-.568.031-.863.103-.295.072-.583.16-.862.272a2.287 2.287 0 0 1-.28.104.488.488 0 0 1-.127.023c-.112 0-.168-.08-.168-.247v-.391c0-.128.016-.224.056-.28a.597.597 0 0 1 .224-.167c.279-.144.614-.264 1.005-.36a4.84 4.84 0 0 1 1.246-.151c.95 0 1.644.216 2.091.647.439.43.662 1.085.662 1.963v2.586z"/></svg>
+            <span class="text-xs font-bold tracking-tight">Amazon Web Services</span>
+          </div>
+          <div class="liquid-glass-pill px-5 py-2.5 flex items-center gap-3 text-slate-300 hover:text-white transition-all cursor-pointer" onclick="showPartnerDetail('NVIDIA', 'CUDA & TensorRT Acceleration')">
+            <svg class="w-5 h-5 fill-current text-emerald-400" viewBox="0 0 24 24"><path d="M8.948 8.798v-1.43a6.7 6.7 0 0 1 .424-.018c3.922-.124 6.493 3.374 6.493 3.374s-2.774 3.851-5.75 3.851c-.398 0-.787-.062-1.158-.185v-4.346c1.528.185 1.837.857 2.747 2.385l2.04-1.714s-1.492-1.952-4-1.952a6.016 6.016 0 0 0-.796.035"/></svg>
+            <span class="text-xs font-bold tracking-tight">NVIDIA</span>
+          </div>
+          <div class="liquid-glass-pill px-5 py-2.5 flex items-center gap-3 text-slate-300 hover:text-white transition-all cursor-pointer" onclick="showPartnerDetail('Microsoft Azure', 'Enterprise Cloud & Active Directory')">
+            <svg class="w-5 h-5 fill-current text-sky-400" viewBox="0 0 24 24"><path d="M0 0v11.408h11.408V0zm12.594 0v11.408H24V0zM0 12.594V24h11.408V12.594zm12.594 0V24H24V12.594z"/></svg>
+            <span class="text-xs font-bold tracking-tight">Microsoft Azure</span>
+          </div>
+          <div class="liquid-glass-pill px-5 py-2.5 flex items-center gap-3 text-slate-300 hover:text-white transition-all cursor-pointer" onclick="showPartnerDetail('Apple', 'SwiftUI, Metal Engine & macOS Native')">
+            <svg class="w-5 h-5 fill-current text-slate-200" viewBox="0 0 24 24"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+            <span class="text-xs font-bold tracking-tight">Apple Ecosystem</span>
+          </div>
+          <div class="liquid-glass-pill px-5 py-2.5 flex items-center gap-3 text-slate-300 hover:text-white transition-all cursor-pointer" onclick="showPartnerDetail('OpenAI', 'Foundation Models & Enterprise Fine-Tuning')">
+            <svg class="w-5 h-5 fill-current text-teal-400" viewBox="0 0 24 24"><path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729z"/></svg>
+            <span class="text-xs font-bold tracking-tight">OpenAI</span>
+          </div>
+          <div class="liquid-glass-pill px-5 py-2.5 flex items-center gap-3 text-slate-300 hover:text-white transition-all cursor-pointer" onclick="showPartnerDetail('Docker & Kubernetes', 'Contenedores y Orquestación Multi-Cloud')">
+            <svg class="w-5 h-5 fill-current text-blue-400" viewBox="0 0 24 24"><path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185"/></svg>
+            <span class="text-xs font-bold tracking-tight">Docker / K8s</span>
+          </div>
+          <div class="liquid-glass-pill px-5 py-2.5 flex items-center gap-3 text-slate-300 hover:text-white transition-all cursor-pointer" onclick="showPartnerDetail('Stripe', 'Infraestructura Global de Pagos & Conciliación')">
+            <svg class="w-5 h-5 fill-current text-indigo-400" viewBox="0 0 24 24"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218z"/></svg>
+            <span class="text-xs font-bold tracking-tight">Stripe Payments</span>
+          </div>
+
+          <!-- Duplicate Set -->
+          <div class="liquid-glass-pill px-5 py-2.5 flex items-center gap-3 text-slate-300 hover:text-white transition-all cursor-pointer" onclick="showPartnerDetail('Google Cloud', 'Cloud Run, Kubernetes & BigQuery')">
+            <svg class="w-5 h-5 fill-current text-blue-400" viewBox="0 0 24 24"><path d="M12.19 2.38a9.344 9.344 0 0 0-9.234 6.893c.053-.02-.055.013 0 0-3.875 2.551-3.922 8.11-.247 10.941l.006-.007-.007.03a6.717 6.717 0 0 0 4.077 1.356h5.173l.03.03h5.192c6.687.053 9.376-8.605 3.835-12.35a9.365 9.365 0 0 0-2.821-4.552l-.043.043.006-.05A9.344 9.344 0 0 0 12.19 2.38z"/></svg>
+            <span class="text-xs font-bold tracking-tight">Google Cloud</span>
+          </div>
+          <div class="liquid-glass-pill px-5 py-2.5 flex items-center gap-3 text-slate-300 hover:text-white transition-all cursor-pointer" onclick="showPartnerDetail('AWS', 'Lambda, ECS & GovCloud')">
+            <svg class="w-5 h-5 fill-current text-amber-400" viewBox="0 0 24 24"><path d="M6.763 10.036c0 .296.032.535.088.71.064.176.144.368.256.576.04.063.056.127.056.183 0 .08-.048.16-.152.24l-.503.335a.383.383 0 0 1-.208.072c-.08 0-.16-.04-.239-.112a2.47 2.47 0 0 1-.287-.375 6.18 6.18 0 0 1-.248-.471c-.622.734-1.405 1.101-2.347 1.101-.67 0-1.205-.191-1.596-.574-.391-.384-.59-.894-.59-1.533 0-.678.239-1.23.726-1.644.487-.415 1.133-.623 1.955-.623.272 0 .551.024.846.064.296.04.6.104.918.176v-.583c0-.607-.127-1.03-.375-1.277-.255-.248-.686-.367-1.3-.367-.28 0-.568.031-.863.103-.295.072-.583.16-.862.272a2.287 2.287 0 0 1-.28.104.488.488 0 0 1-.127.023c-.112 0-.168-.08-.168-.247v-.391c0-.128.016-.224.056-.28a.597.597 0 0 1 .224-.167c.279-.144.614-.264 1.005-.36a4.84 4.84 0 0 1 1.246-.151c.95 0 1.644.216 2.091.647.439.43.662 1.085.662 1.963v2.586z"/></svg>
+            <span class="text-xs font-bold tracking-tight">Amazon Web Services</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SERVICES (LIQUID GLASS + GSAP MODALS) ================= -->
+    <section id="services" class="py-28 relative z-20">
+      <div class="max-w-7xl mx-auto px-6">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div>
+            <span class="font-mono text-xs uppercase tracking-widest text-brand-blueLight font-semibold mb-2 block" data-i18n="servicesOverline">
+              02 / CAPACIDADES DE INGENIERÍA
+            </span>
+            <h2 class="text-3xl sm:text-4xl md:text-5xl font-display font-extrabold text-white tracking-tight" data-i18n="servicesTitle">
+              Servicios Diseñados para Escalar.
+            </h2>
+          </div>
+          <p class="text-sm sm:text-base text-slate-400 max-w-md font-normal leading-relaxed" data-i18n="servicesDesc">
+            Desde microservicios de ultra-baja latencia hasta interfaces líquidas de precisión. Haz clic en cualquier módulo para abrir la especificación técnica en tiempo real.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Service 1 -->
+          <div class="liquid-glass p-8 flex flex-col justify-between group cursor-pointer" onclick="openServiceModal('software')">
+            <div class="pinpoint-glint top-4 right-4"></div>
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-6 group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              </div>
+              <span class="font-mono text-[10px] text-blue-400 font-bold uppercase tracking-wider mb-2 block">01 · CORE PLATFORMS</span>
+              <h3 class="text-xl font-display font-bold text-white mb-3 group-hover:text-blue-300 transition-colors" data-i18n="srv1Title">
+                Desarrollo de Software a Medida
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6" data-i18n="srv1Desc">
+                Plataformas empresariales, sistemas transaccionales y aplicaciones web de alto rendimiento programadas con TypeScript, Go y Rust.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-white/5 flex items-center justify-between text-xs font-mono text-slate-400 group-hover:text-white transition-colors">
+              <span data-i18n="cardInspect">Inspeccionar Módulo</span>
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </div>
+          </div>
+
+          <!-- Service 2 -->
+          <div class="liquid-glass p-8 flex flex-col justify-between group cursor-pointer" onclick="openServiceModal('cloud')">
+            <div class="pinpoint-glint top-4 right-4"></div>
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-6 group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+              </div>
+              <span class="font-mono text-[10px] text-indigo-400 font-bold uppercase tracking-wider mb-2 block">02 · DISTRIBUTED MESH</span>
+              <h3 class="text-xl font-display font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors" data-i18n="srv2Title">
+                Soluciones en la Nube & DevOps
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6" data-i18n="srv2Desc">
+                Arquitectura multi-cloud resiliente (AWS, GCP, Azure), orquestación con Kubernetes y pipelines CI/CD con despliegues sin interrupciones.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-white/5 flex items-center justify-between text-xs font-mono text-slate-400 group-hover:text-white transition-colors">
+              <span data-i18n="cardInspect">Inspeccionar Módulo</span>
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </div>
+          </div>
+
+          <!-- Service 3 -->
+          <div class="liquid-glass p-8 flex flex-col justify-between group cursor-pointer" onclick="openServiceModal('security')">
+            <div class="pinpoint-glint top-4 right-4"></div>
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <span class="font-mono text-[10px] text-emerald-400 font-bold uppercase tracking-wider mb-2 block">03 · ZERO-TRUST SECURITY</span>
+              <h3 class="text-xl font-display font-bold text-white mb-3 group-hover:text-emerald-300 transition-colors" data-i18n="srv3Title">
+                Seguridad y Confianza Blindada
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6" data-i18n="srv3Desc">
+                Criptografía de grado militar, auditorías de penetración, cumplimiento normativo SOC 2 / ISO 27001 y protección DDoS perimetral.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-white/5 flex items-center justify-between text-xs font-mono text-slate-400 group-hover:text-white transition-colors">
+              <span data-i18n="cardInspect">Inspeccionar Módulo</span>
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </div>
+          </div>
+
+          <!-- Service 4 -->
+          <div class="liquid-glass p-8 flex flex-col justify-between group cursor-pointer" onclick="openServiceModal('ai')">
+            <div class="pinpoint-glint top-4 right-4"></div>
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-400 mb-6 group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10H12V2z"></path><path d="M12 12 2.1 7.1"></path><path d="M12 12v9.9"></path></svg>
+              </div>
+              <span class="font-mono text-[10px] text-purple-400 font-bold uppercase tracking-wider mb-2 block">04 · NEURAL INTELLIGENCE</span>
+              <h3 class="text-xl font-display font-bold text-white mb-3 group-hover:text-purple-300 transition-colors" data-i18n="srv4Title">
+                Innovación & IA Escalable
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6" data-i18n="srv4Desc">
+                Agentes autónomos para automatización de flujos de negocio, modelos RAG privados con cero fuga de datos y pipelines de ML en tiempo real.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-white/5 flex items-center justify-between text-xs font-mono text-slate-400 group-hover:text-white transition-colors">
+              <span data-i18n="cardInspect">Inspeccionar Módulo</span>
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </div>
+          </div>
+
+          <!-- Service 5 -->
+          <div class="liquid-glass p-8 flex flex-col justify-between group cursor-pointer" onclick="openServiceModal('fintech')">
+            <div class="pinpoint-glint top-4 right-4"></div>
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-6 group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              </div>
+              <span class="font-mono text-[10px] text-cyan-400 font-bold uppercase tracking-wider mb-2 block">05 · ULTRA CONCURRENCY</span>
+              <h3 class="text-xl font-display font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors" data-i18n="srv5Title">
+                Sistemas de Alta Concurrencia & Finanzas
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6" data-i18n="srv5Desc">
+                Motores de pago de ultra-baja latencia, conciliación en tiempo real y modernización de infraestructuras bancarias heredadas sin fricción.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-white/5 flex items-center justify-between text-xs font-mono text-slate-400 group-hover:text-white transition-colors">
+              <span data-i18n="cardInspect">Inspeccionar Módulo</span>
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </div>
+          </div>
+
+          <!-- Service 6 -->
+          <div class="liquid-glass p-8 flex flex-col justify-between group cursor-pointer" onclick="openServiceModal('uiux')">
+            <div class="pinpoint-glint top-4 right-4"></div>
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 mb-6 group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+              </div>
+              <span class="font-mono text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-2 block">06 · DESIGN CRAFT</span>
+              <h3 class="text-xl font-display font-bold text-white mb-3 group-hover:text-amber-300 transition-colors" data-i18n="srv6Title">
+                Experiencia Digital & UI/UX de Precisión
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6" data-i18n="srv6Desc">
+                Sistemas de diseño escalables, microinteracciones fluidas y ergonomía digital inspirada en los estándares de Apple, Tesla e interfaces futuristas.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-white/5 flex items-center justify-between text-xs font-mono text-slate-400 group-hover:text-white transition-colors">
+              <span data-i18n="cardInspect">Inspeccionar Módulo</span>
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= MULTI-INDUSTRY SECTOR MATRIX ================= -->
+    <section id="sectors" class="py-24 bg-brand-surface1 border-y border-white/5 relative z-20">
+      <div class="max-w-7xl mx-auto px-6">
+        
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <span class="font-mono text-xs uppercase tracking-widest text-brand-purpleLight font-semibold mb-2 block" data-i18n="sectorsOverline">
+            03 / SOLUCIONES MULTI-RUBRO
+          </span>
+          <h2 class="text-3xl sm:text-4xl md:text-5xl font-display font-extrabold text-white tracking-tight mb-4" data-i18n="sectorsTitle">
+            Software de Élite para Diversas Industrias.
+          </h2>
+          <p class="text-sm sm:text-base text-slate-400" data-i18n="sectorsDesc">
+            Cada sector tiene exigencias operativas y regulatorias únicas. Diseñamos soluciones personalizadas que resuelven los desafíos nucleares de tu negocio.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-2 mb-12">
+          <button onclick="switchSector('fintech')" id="sectorBtn_fintech" class="px-5 py-2.5 rounded-full font-mono text-xs font-bold transition-all bg-brand-blue text-white shadow-lg">
+            💳 Fintech & Banca
+          </button>
+          <button onclick="switchSector('health')" id="sectorBtn_health" class="px-5 py-2.5 rounded-full font-mono text-xs font-bold transition-all liquid-glass-pill text-slate-400 hover:text-white">
+            🏥 Salud & Healthtech
+          </button>
+          <button onclick="switchSector('logistics')" id="sectorBtn_logistics" class="px-5 py-2.5 rounded-full font-mono text-xs font-bold transition-all liquid-glass-pill text-slate-400 hover:text-white">
+            🚚 Logística & Supply Chain
+          </button>
+          <button onclick="switchSector('retail')" id="sectorBtn_retail" class="px-5 py-2.5 rounded-full font-mono text-xs font-bold transition-all liquid-glass-pill text-slate-400 hover:text-white">
+            🛍️ Retail & E-Commerce
+          </button>
+          <button onclick="switchSector('energy')" id="sectorBtn_energy" class="px-5 py-2.5 rounded-full font-mono text-xs font-bold transition-all liquid-glass-pill text-slate-400 hover:text-white">
+            ⚡ Industria & IoT
+          </button>
+        </div>
+
+        <div id="sectorContentCard" class="liquid-glass p-8 sm:p-12 rounded-[32px] grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <div class="lg:col-span-7 space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 font-mono text-xs font-semibold">
+              <span id="sectorTag">FINANZAS & CRIPTOGRAFÍA ACID</span>
+            </div>
+            <h3 id="sectorHeading" class="text-2xl sm:text-3xl font-display font-extrabold text-white">
+              Ecosistemas Financieros y Pagos de Alta Frecuencia
+            </h3>
+            <p id="sectorDescription" class="text-slate-300 text-sm sm:text-base leading-relaxed">
+              Desarrollamos pasarelas de pago resilientes, sistemas de billeteras virtuales (wallets), conciliación contable autónoma y motores de detección de anomalías en milisegundos con total cumplimiento PCI-DSS.
+            </p>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4">
+              <div class="bg-[#090D14] p-3.5 rounded-xl border border-white/5">
+                <span class="block text-slate-400 text-xs font-mono">Disponibilidad</span>
+                <span id="sectorStat1" class="text-white font-mono font-bold text-lg">99.999%</span>
+              </div>
+              <div class="bg-[#090D14] p-3.5 rounded-xl border border-white/5">
+                <span class="block text-slate-400 text-xs font-mono">Latencia Media</span>
+                <span id="sectorStat2" class="text-emerald-400 font-mono font-bold text-lg">&lt; 15 ms</span>
+              </div>
+              <div class="bg-[#090D14] p-3.5 rounded-xl border border-white/5">
+                <span class="block text-slate-400 text-xs font-mono">Cumplimiento</span>
+                <span id="sectorStat3" class="text-indigo-400 font-mono font-bold text-lg">PCI-DSS L1</span>
+              </div>
+            </div>
+
+            <div class="pt-4">
+              <button onclick="openProjectDrawerWithSector()" class="btn-apple-primary px-6 py-3 text-xs font-bold inline-flex items-center gap-2">
+                <span>Cotizar Solución para este Rubro</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 bg-[#090D14] p-6 rounded-2xl border border-white/5 font-mono text-xs text-slate-300 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-white/5 text-slate-400 text-[11px]">
+              <span>BLUEPRINT DE ARQUITECTURA</span>
+              <span id="sectorBadgeStatus" class="text-emerald-400 font-bold">ACTIVO</span>
+            </div>
+            <div class="space-y-2" id="sectorBlueprintList">
+              <div class="flex items-center gap-2 text-slate-300">
+                <span class="text-blue-400">01</span>
+                <span>API Gateway Distribuido (Kong / Envoy)</span>
+              </div>
+              <div class="flex items-center gap-2 text-slate-300">
+                <span class="text-blue-400">02</span>
+                <span>Microservicios Event-Driven (Apache Kafka + Go)</span>
+              </div>
+              <div class="flex items-center gap-2 text-slate-300">
+                <span class="text-blue-400">03</span>
+                <span>Base de Datos ACID Multi-Región (PostgreSQL + CockroachDB)</span>
+              </div>
+              <div class="flex items-center gap-2 text-slate-300">
+                <span class="text-blue-400">04</span>
+                <span>Bóveda Criptográfica HSM & Tokens Efímeros</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= TELEMETRY HUD & METRICS ================= -->
+    <section id="telemetry" class="py-24 relative z-20">
+      <div class="max-w-7xl mx-auto px-6">
+        
+        <div class="text-center max-w-2xl mx-auto mb-16">
+          <span class="font-mono text-xs uppercase tracking-widest text-slate-400 font-bold mb-2 block" data-i18n="telemetryOverline">
+            04 / VERIFICACIÓN & TELEMETRÍA
+          </span>
+          <h2 class="text-3xl sm:text-4xl md:text-5xl font-display font-extrabold text-white tracking-tight" data-i18n="telemetryTitle">
+            Rendimiento Medible en Producción.
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <div class="liquid-glass p-8 text-center flex flex-col justify-between">
+            <span class="font-mono text-[11px] text-slate-400 uppercase tracking-wider block mb-4" data-i18n="slaAvailability">DISPONIBILIDAD SISTÉMICA</span>
+            <div class="font-mono text-4xl sm:text-5xl font-extrabold text-white mb-2" id="statCounter1">99.99%</div>
+            <span class="text-xs text-slate-400" data-i18n="slaAvailDesc">SLA contractual garantizado multi-región</span>
+          </div>
+
+          <div class="liquid-glass p-8 text-center flex flex-col justify-between">
+            <span class="font-mono text-[11px] text-emerald-400 uppercase tracking-wider block mb-4" data-i18n="slaLatency">TIEMPO DE RESPUESTA P99</span>
+            <div class="font-mono text-4xl sm:text-5xl font-extrabold text-emerald-400 mb-2" id="statCounter2">&lt; 15ms</div>
+            <span class="text-xs text-slate-400" data-i18n="slaLatDesc">Optimización bare-metal sin cuellos de botella</span>
+          </div>
+
+          <div class="liquid-glass p-8 text-center flex flex-col justify-between">
+            <span class="font-mono text-[11px] text-brand-blueLight uppercase tracking-wider block mb-4" data-i18n="slaTx">TRANSACCIONES ANUALES</span>
+            <div class="font-mono text-4xl sm:text-5xl font-extrabold text-blue-400 mb-2" id="statCounter3">+180M</div>
+            <span class="text-xs text-slate-400" data-i18n="slaTxDesc">Procesadas en clientes corporativos</span>
+          </div>
+
+          <div class="liquid-glass p-8 text-center flex flex-col justify-between">
+            <span class="font-mono text-[11px] text-purple-400 uppercase tracking-wider block mb-4" data-i18n="slaVulnerabilities">VULNERABILIDADES CRÍTICAS</span>
+            <div class="font-mono text-4xl sm:text-5xl font-extrabold text-purple-400 mb-2" id="statCounter4">0</div>
+            <span class="text-xs text-slate-400" data-i18n="slaVulnDesc">Auditorías continuas de penetración Zero-Trust</span>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= SEDES & HUBS DE INGENIERÍA ================= -->
+    <section id="facilities" class="py-24 bg-brand-surface1 border-t border-white/5 relative z-20">
+      <div class="max-w-7xl mx-auto px-6">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div>
+            <span class="font-mono text-xs uppercase tracking-widest text-slate-400 font-bold mb-2 block" data-i18n="facilitiesOverline">
+              05 / INFRAESTRUCTURA & PRESENCIA FÍSICA
+            </span>
+            <h2 class="text-3xl sm:text-4xl md:text-5xl font-display font-extrabold text-white tracking-tight" data-i18n="facilitiesTitle">
+              Sedes Globales & Hubs de Innovación.
+            </h2>
+          </div>
+          <p class="text-sm sm:text-base text-slate-400 max-w-md font-normal leading-relaxed" data-i18n="facilitiesDesc">
+            Nuestros campus y laboratorios de software reúnen ingenieros de élite con infraestructura de fibra óptica directa a los principales centros de datos del mundo.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <div class="lg:col-span-7 liquid-glass p-4 sm:p-6 rounded-[32px] relative group overflow-hidden">
+            <div class="relative w-full h-[360px] sm:h-[440px] rounded-2xl overflow-hidden bg-black flex items-center justify-center">
+              <img 
+                id="headquartersImg"
+                src="./assets/lexur_building_apex.png" 
+                alt="LEXUR Software Engineering Headquarters" 
+                class="w-full h-full object-contain filter drop-shadow-[0_20px_35px_rgba(0,0,0,0.8)] transition-transform duration-500 group-hover:scale-105"
+              >
+              
+              <div class="absolute bottom-4 left-4 liquid-glass-pill px-4 py-2 flex items-center gap-2 text-xs font-mono text-white">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span id="headquartersCaption">Sede Central Apex — Laboratorio de Cómputo Distribuido</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-4 mt-2">
+              <div class="flex items-center gap-2">
+                <button id="btnCampusApex" onclick="switchCampus('apex')" class="px-3.5 py-1.5 rounded-full bg-brand-blue text-white font-mono text-xs font-bold transition-all">Sede Central Apex</button>
+                <button id="btnCampusPavilion" onclick="switchCampus('clean')" class="px-3.5 py-1.5 rounded-full liquid-glass-pill text-slate-400 hover:text-white font-mono text-xs font-bold transition-all">Pabellón de I+D</button>
+              </div>
+              <span class="font-mono text-xs text-slate-500 hidden sm:block">Certificación Tier IV</span>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 space-y-6">
+            
+            <div class="liquid-glass p-6 rounded-2xl">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                <h4 class="font-display font-bold text-white text-base">América del Norte & Europa</h4>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                Coordinación estratégica para clientes de Silicon Valley, Austin, Londres y Madrid con soporte 24/7 y SLA garantizado.
+              </p>
+            </div>
+
+            <div class="liquid-glass p-6 rounded-2xl">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="w-3 h-3 rounded-full bg-purple-500"></span>
+                <h4 class="font-display font-bold text-white text-base">Hub Tecnológico LATAM</h4>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                Centro de excelencia de ingeniería con talento bilingüe de primer nivel, reduciendo costos operativos y maximizando velocidad de despliegue.
+              </p>
+            </div>
+
+            <div class="liquid-glass p-6 rounded-2xl">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                <h4 class="font-display font-bold text-white text-base">Conectividad de Ultra-Baja Latencia</h4>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                Enlaces directos mediante fibra oscura y nodos perimetrales para garantizar transmisiones por debajo de los 10ms en puntos críticos.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= CTA BANNER ================= -->
+    <section class="py-24 relative z-20 overflow-hidden">
+      <div class="max-w-5xl mx-auto px-6">
+        <div class="liquid-glass p-10 sm:p-16 text-center rounded-[36px] relative">
+          <div class="pinpoint-glint top-6 left-8"></div>
+          <div class="pinpoint-glint top-6 right-8"></div>
+          
+          <span class="font-mono text-xs uppercase tracking-widest text-brand-blueLight font-bold mb-3 block" data-i18n="ctaPreheader">
+            ¿LISTO PARA EL SIGUIENTE NIVEL DE SOFTWARE?
+          </span>
+          <h2 class="text-3xl sm:text-5xl font-display font-extrabold text-white tracking-tight mb-6 max-w-3xl mx-auto" data-i18n="ctaTitle">
+            Transformemos tu visión en un sistema de clase mundial.
+          </h2>
+          <p class="text-slate-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed mb-8" data-i18n="ctaDesc">
+            Agenda una sesión de consultoría técnica con nuestros arquitectos de software. Analizaremos tus requerimientos y diseñaremos una hoja de ruta precisa.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4">
+            <button onclick="openProjectDrawer()" data-i18n="ctaButton" class="btn-apple-primary px-9 py-4 text-sm font-bold flex items-center gap-2">
+              <span>Iniciar Consulta de Proyecto</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= MODERN FOOTER ================= -->
+  <footer class="bg-black border-t border-white/5 py-16 relative z-20 text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-6">
+      
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-10 pb-12 border-b border-white/5">
+        
+        <div class="md:col-span-2 space-y-4">
+          <div class="flex items-center gap-3">
+            <img src="./assets/lexur_brand_icon_clean.png" alt="LEXUR Icon" class="w-6 h-auto">
+            <span class="font-display font-extrabold text-lg text-white">LEXUR</span>
+          </div>
+          <p class="text-slate-400 leading-relaxed max-w-sm" data-i18n="footerTagline">
+            Creamos soluciones, impulsamos tu futuro. Soluciones de software de alta calidad y arquitectura distribuida de próxima generación.
+          </p>
+          <div class="font-mono text-[11px] text-slate-500">
+            <span>SISTEMA: LEXUR OS v4.8</span> · <span class="text-emerald-400">STATUS: VERIFICADO</span>
+          </div>
+        </div>
+
+        <div>
+          <span class="font-mono text-[11px] uppercase tracking-wider text-slate-300 font-bold block mb-3" data-i18n="footerColServices">Servicios</span>
+          <ul class="space-y-2 text-slate-400">
+            <li><a href="#services" onclick="openServiceModal('software')" class="hover:text-white transition-colors">Software a Medida</a></li>
+            <li><a href="#services" onclick="openServiceModal('cloud')" class="hover:text-white transition-colors">Arquitectura Cloud</a></li>
+            <li><a href="#services" onclick="openServiceModal('security')" class="hover:text-white transition-colors">Ciberseguridad Zero-Trust</a></li>
+            <li><a href="#services" onclick="openServiceModal('ai')" class="hover:text-white transition-colors">Inteligencia Artificial</a></li>
+            <li><a href="#services" onclick="openServiceModal('fintech')" class="hover:text-white transition-colors">Sistemas Transaccionales</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <span class="font-mono text-[11px] uppercase tracking-wider text-slate-300 font-bold block mb-3" data-i18n="footerColIndustries">Rubros</span>
+          <ul class="space-y-2 text-slate-400">
+            <li><a href="#sectors" onclick="switchSector('fintech')" class="hover:text-white transition-colors">Fintech & Bancario</a></li>
+            <li><a href="#sectors" onclick="switchSector('health')" class="hover:text-white transition-colors">Healthtech & Salud</a></li>
+            <li><a href="#sectors" onclick="switchSector('logistics')" class="hover:text-white transition-colors">Logística & Cadena</a></li>
+            <li><a href="#sectors" onclick="switchSector('retail')" class="hover:text-white transition-colors">Retail & E-commerce</a></li>
+            <li><a href="#sectors" onclick="switchSector('energy')" class="hover:text-white transition-colors">Industria & IoT</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <span class="font-mono text-[11px] uppercase tracking-wider text-slate-300 font-bold block mb-3" data-i18n="footerColCompany">Empresa</span>
+          <ul class="space-y-2 text-slate-400">
+            <li><a href="#facilities" class="hover:text-white transition-colors">Sedes & Campus</a></li>
+            <li><a href="#telemetry" class="hover:text-white transition-colors">Métricas & SLA</a></li>
+            <li><button onclick="openProjectDrawer()" class="hover:text-white transition-colors text-left">Cotizar Proyecto</button></li>
+            <li><span class="text-slate-600">Carreras & Talento</span></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
+        <div>
+          © 2026 LEXUR Software Solutions. Todos los derechos reservados.
+        </div>
+        <div class="flex items-center gap-6">
+          <a href="#" class="hover:text-slate-400 transition-colors">Privacidad & Seguridad</a>
+          <a href="#" class="hover:text-slate-400 transition-colors">Términos de Servicio</a>
+          <a href="#hero" class="hover:text-white transition-colors font-mono">Volver Arriba ↑</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ================= GSAP LIQUID GLASS MODAL (SERVICES) ================= -->
+  <div id="serviceModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl hidden flex items-center justify-center p-4 sm:p-6 opacity-0" role="dialog" aria-modal="true">
+    <div class="liquid-glass-modal w-full max-w-2xl p-6 sm:p-9 relative max-h-[90vh] overflow-y-auto" id="serviceModalCard">
+      
+      <button onclick="closeServiceModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors" aria-label="Cerrar modal">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div id="modalIconContainer" class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+        </div>
+        <div>
+          <span id="modalCategory" class="font-mono text-[10px] text-blue-400 font-bold uppercase tracking-wider block">ESPECIFICACIÓN TÉCNICA</span>
+          <h3 id="modalTitle" class="text-xl sm:text-2xl font-display font-extrabold text-white">Título de Servicio</h3>
+        </div>
+      </div>
+
+      <p id="modalDescription" class="text-slate-300 text-sm leading-relaxed mb-6">
+        Descripción detallada de la arquitectura.
+      </p>
+
+      <div class="mb-6">
+        <span class="font-mono text-xs text-slate-400 font-bold block mb-2" data-i18n="modalStackTitle">Stack Tecnológico Principal</span>
+        <div id="modalStackTags" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <div class="mb-8 bg-[#070A0F] p-5 rounded-2xl border border-white/5">
+        <span class="font-mono text-xs text-slate-400 font-bold block mb-3" data-i18n="modalDeliverablesTitle">Entregables de Ingeniería & SLA</span>
+        <ul id="modalDeliverablesList" class="space-y-2 text-xs text-slate-300 font-mono"></ul>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button onclick="closeServiceModal()" class="px-5 py-2.5 rounded-full text-xs font-mono text-slate-400 hover:text-white" data-i18n="modalClose">Cerrar</button>
+        <button onclick="requestThisService()" class="btn-apple-primary px-6 py-2.5 text-xs font-bold" data-i18n="modalCta">
+          Solicitar Cotización de este Módulo
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= GSAP PROJECT ESTIMATOR DRAWER ================= -->
+  <div id="projectDrawerOverlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl hidden flex justify-end opacity-0" onclick="closeProjectDrawer(event)">
+    <div class="liquid-glass-modal w-full max-w-xl h-full p-6 sm:p-10 flex flex-col justify-between overflow-y-auto transform translate-x-full" id="projectDrawerContent" onclick="event.stopPropagation()">
+      
+      <div>
+        <div class="flex items-center justify-between pb-6 mb-6 border-b border-white/10">
+          <div>
+            <span class="font-mono text-xs text-brand-blueLight font-bold uppercase tracking-widest block">CONSULTORÍA TÉCNICA</span>
+            <h3 class="text-2xl font-display font-extrabold text-white" data-i18n="drawerTitle">Iniciar Proyecto</h3>
+          </div>
+          <button onclick="closeProjectDrawer()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <form id="projectForm" onsubmit="handleProjectSubmit(event)" class="space-y-5">
+          <div>
+            <label class="block font-mono text-xs text-slate-300 font-bold mb-1.5" data-i18n="formName">Nombre o Empresa *</label>
+            <input type="text" id="formNameInput" required placeholder="Ej. Corporación Apex / John Doe" class="w-full bg-[#070A0F] text-white px-4 py-3 rounded-xl border border-white/10 focus:border-brand-blue outline-none text-sm transition-colors">
+          </div>
+
+          <div>
+            <label class="block font-mono text-xs text-slate-300 font-bold mb-1.5" data-i18n="formEmail">Email Corporativo *</label>
+            <input type="email" id="formEmailInput" required placeholder="tu@empresa.com" class="w-full bg-[#070A0F] text-white px-4 py-3 rounded-xl border border-white/10 focus:border-brand-blue outline-none text-sm transition-colors">
+          </div>
+
+          <div>
+            <label class="block font-mono text-xs text-slate-300 font-bold mb-1.5" data-i18n="formSector">Rubro o Industria *</label>
+            <select id="formSectorInput" class="w-full bg-[#070A0F] text-white px-4 py-3 rounded-xl border border-white/10 focus:border-brand-blue outline-none text-sm transition-colors">
+              <option value="Fintech & Finanzas">Fintech & Servicios Financieros</option>
+              <option value="Healthtech & Salud">Healthtech & Salud</option>
+              <option value="Logística & Transporte">Logística & Cadena de Suministro</option>
+              <option value="Retail & E-Commerce">Retail & Comercio Masivo</option>
+              <option value="Industria & IoT">Energía, Industria 4.0 & IoT</option>
+              <option value="Otro Rubro">Otro rubro empresarial</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-mono text-xs text-slate-300 font-bold mb-1.5" data-i18n="formService">Servicio de Interés *</label>
+            <select id="formServiceInput" class="w-full bg-[#070A0F] text-white px-4 py-3 rounded-xl border border-white/10 focus:border-brand-blue outline-none text-sm transition-colors">
+              <option value="Desarrollo de Software a Medida">Desarrollo de Software a Medida</option>
+              <option value="Soluciones Cloud & DevOps">Soluciones Cloud & Arquitectura de Nube</option>
+              <option value="Ciberseguridad Zero-Trust">Ciberseguridad & DevSecOps</option>
+              <option value="Inteligencia Artificial & RAG">Inteligencia Artificial & Agentes</option>
+              <option value="Sistemas de Alta Concurrencia">Sistemas de Alta Concurrencia</option>
+              <option value="Diseño UI/UX de Precisión">Diseño UI/UX & Sistemas de Experiencia</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-mono text-xs text-slate-300 font-bold mb-1.5" data-i18n="formDetails">Detalles del Proyecto</label>
+            <textarea id="formDetailsInput" rows="3" placeholder="Describe brevemente el alcance, escala de usuarios o requerimientos clave..." class="w-full bg-[#070A0F] text-white px-4 py-3 rounded-xl border border-white/10 focus:border-brand-blue outline-none text-sm transition-colors"></textarea>
+          </div>
+
+          <div class="pt-4">
+            <button type="submit" class="btn-apple-primary w-full py-4 text-sm font-bold flex items-center justify-center gap-2">
+              <span data-i18n="formSubmit">Enviar Solicitud a Ingeniería</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="pt-6 border-t border-white/10 text-[11px] font-mono text-slate-500">
+        Respuesta garantizada en menos de 4 horas hábiles bajo acuerdo NDA de confidencialidad.
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= CLIENT SCRIPTS ================= -->
+  <script>
+    const translations = {
+      es: {
+        navHome: "Inicio",
+        navServices: "Servicios",
+        navSectors: "Rubros & Soluciones",
+        navArchitecture: "Arquitectura",
+        navTelemetry: "Métricas & SLA",
+        navFacilities: "Sedes & Hubs",
+        navCta: "Iniciar Proyecto",
+        heroStatus: "SISTEMA DISTRIBUIDO OPERACIONAL",
+        heroTitlePart1: "Ingeniería de software",
+        heroTitlePart2: "sin concesiones.",
+        heroSubtitle: "Creamos soluciones, impulsamos tu futuro. Diseñamos plataformas digitales, sistemas en la nube e inteligencia aplicada con la precisión y el rigor de los mejores sistemas del planeta.",
+        heroCtaPrimary: "Iniciar Consulta de Proyecto",
+        heroCtaSecondary: "Explorar Servicios",
+        tabCore: "Core Transaccional",
+        tabCloud: "Malla Cloud",
+        tabAi: "Motor IA",
+        tabSecurity: "Zero-Trust",
+        hudTitle: "Telemetría en Vivo",
+        metricThroughput: "Rendimiento Transaccional",
+        metricP99: "Latencia P99 Edge",
+        metricReliability: "Fiabilidad del Cluster",
+        btnStressTest: "Probar Carga en Vivo",
+        partnersOverline: "01 / ECOSISTEMA TECNOLÓGICO",
+        partnersTitle: "Integrado con Líderes Globales",
+        partnersIntegrations: "16 PLATAFORMAS NATIVAS",
+        servicesOverline: "02 / CAPACIDADES DE INGENIERÍA",
+        servicesTitle: "Servicios Diseñados para Escalar.",
+        servicesDesc: "Desde microservicios de ultra-baja latencia hasta interfaces líquidas de precisión. Haz clic en cualquier módulo para abrir la especificación técnica en tiempo real.",
+        srv1Title: "Desarrollo de Software a Medida",
+        srv1Desc: "Plataformas empresariales, sistemas transaccionales y aplicaciones web de alto rendimiento programadas con TypeScript, Go y Rust.",
+        srv2Title: "Soluciones en la Nube & DevOps",
+        srv2Desc: "Arquitectura multi-cloud resiliente (AWS, GCP, Azure), orquestación con Kubernetes y pipelines CI/CD con despliegues sin interrupciones.",
+        srv3Title: "Seguridad y Confianza Blindada",
+        srv3Desc: "Criptografía de grado militar, auditorías de penetración, cumplimiento normativo SOC 2 / ISO 27001 y protección DDoS perimetral.",
+        srv4Title: "Innovación & IA Escalable",
+        srv4Desc: "Agentes autónomos para automatización de flujos de negocio, modelos RAG privados con cero fuga de datos y pipelines de ML en tiempo real.",
+        srv5Title: "Sistemas de Alta Concurrencia & Finanzas",
+        srv5Desc: "Motores de pago de ultra-baja latencia, conciliación en tiempo real y modernización de infraestructuras bancarias heredadas sin fricción.",
+        srv6Title: "Experiencia Digital & UI/UX de Precisión",
+        srv6Desc: "Sistemas de diseño escalables, microinteracciones fluidas y ergonomía digital inspirada en los estándares de Apple, Tesla e interfaces futuristas.",
+        cardInspect: "Inspeccionar Módulo",
+        sectorsOverline: "03 / SOLUCIONES MULTI-RUBRO",
+        sectorsTitle: "Software de Élite para Diversas Industrias.",
+        sectorsDesc: "Cada sector tiene exigencias operativas y regulatorias únicas. Diseñamos soluciones personalizadas que resuelven los desafíos nucleares de tu negocio.",
+        telemetryOverline: "04 / VERIFICACIÓN & TELEMETRÍA",
+        telemetryTitle: "Rendimiento Medible en Producción.",
+        slaAvailability: "DISPONIBILIDAD SISTÉMICA",
+        slaAvailDesc: "SLA contractual garantizado multi-región",
+        slaLatency: "TIEMPO DE RESPUESTA P99",
+        slaLatDesc: "Optimización bare-metal sin cuellos de botella",
+        slaTx: "TRANSACCIONES ANUALES",
+        slaTxDesc: "Procesadas en clientes corporativos",
+        slaVulnerabilities: "VULNERABILIDADES CRÍTICAS",
+        slaVulnDesc: "Auditorías continuas de penetración Zero-Trust",
+        facilitiesOverline: "05 / INFRAESTRUCTURA & PRESENCIA FÍSICA",
+        facilitiesTitle: "Sedes Globales & Hubs de Innovación.",
+        facilitiesDesc: "Nuestros campus y laboratorios de software reúnen ingenieros de élite con infraestructura de fibra óptica directa a los principales centros de datos del mundo.",
+        ctaPreheader: "¿LISTO PARA EL SIGUIENTE NIVEL DE SOFTWARE?",
+        ctaTitle: "Transformemos tu visión en un sistema de clase mundial.",
+        ctaDesc: "Agenda una sesión de consultoría técnica con nuestros arquitectos de software. Analizaremos tus requerimientos y diseñaremos una hoja de ruta precisa.",
+        ctaButton: "Iniciar Consulta de Proyecto",
+        footerTagline: "Creamos soluciones, impulsamos tu futuro. Soluciones de software de alta calidad y arquitectura distribuida de próxima generación.",
+        footerColServices: "Servicios",
+        footerColIndustries: "Rubros",
+        footerColCompany: "Empresa",
+        modalStackTitle: "Stack Tecnológico Principal",
+        modalDeliverablesTitle: "Entregables de Ingeniería & SLA",
+        modalClose: "Cerrar",
+        modalCta: "Solicitar Cotización de este Módulo",
+        drawerTitle: "Iniciar Proyecto",
+        formName: "Nombre o Empresa *",
+        formEmail: "Email Corporativo *",
+        formSector: "Rubro o Industria *",
+        formService: "Servicio de Interés *",
+        formDetails: "Detalles del Proyecto",
+        formSubmit: "Enviar Solicitud a Ingeniería"
+      },
+      en: {
+        navHome: "Home",
+        navServices: "Services",
+        navSectors: "Industries & Solutions",
+        navArchitecture: "Architecture",
+        navTelemetry: "Metrics & SLA",
+        navFacilities: "Hubs & Campuses",
+        navCta: "Start Project",
+        heroStatus: "DISTRIBUTED SYSTEM OPERATIONAL",
+        heroTitlePart1: "Software engineering",
+        heroTitlePart2: "without compromise.",
+        heroSubtitle: "We engineer solutions, powering your future. We architect digital platforms, cloud ecosystems, and applied AI with the precision and discipline of the world's finest systems.",
+        heroCtaPrimary: "Start Project Consultation",
+        heroCtaSecondary: "Explore Services",
+        tabCore: "Transactional Core",
+        tabCloud: "Cloud Mesh",
+        tabAi: "AI Engine",
+        tabSecurity: "Zero-Trust",
+        hudTitle: "Live Telemetry",
+        metricThroughput: "Transactional Throughput",
+        metricP99: "P99 Edge Latency",
+        metricReliability: "Cluster Reliability",
+        btnStressTest: "Simulate Live Load",
+        partnersOverline: "01 / TECHNOLOGY ECOSYSTEM",
+        partnersTitle: "Integrated with Global Leaders",
+        partnersIntegrations: "16 NATIVE PLATFORMS",
+        servicesOverline: "02 / ENGINEERING CAPABILITIES",
+        servicesTitle: "Services Built to Scale.",
+        servicesDesc: "From ultra-low latency microservices to precision liquid interfaces. Click on any module to inspect the real-time technical blueprint.",
+        srv1Title: "Custom Software Engineering",
+        srv1Desc: "Enterprise platforms, high-throughput transactional systems, and web applications built with TypeScript, Go, and Rust.",
+        srv2Title: "Cloud Solutions & DevOps",
+        srv2Desc: "Resilient multi-cloud architecture (AWS, GCP, Azure), Kubernetes orchestration, and zero-downtime CI/CD deployment pipelines.",
+        srv3Title: "Zero-Trust Security & Hardening",
+        srv3Desc: "Military-grade encryption, automated penetration testing, SOC 2 / ISO 27001 compliance, and perimeter DDoS mitigation.",
+        srv4Title: "Applied AI & Scalable Models",
+        srv4Desc: "Autonomous agents for business workflows, private RAG models with zero data leakage, and real-time streaming ML pipelines.",
+        srv5Title: "High-Concurrency & Fintech Systems",
+        srv5Desc: "Sub-millisecond payment engines, autonomous reconciliation, and frictionless legacy banking modernization.",
+        srv6Title: "Precision UI/UX Design Systems",
+        srv6Desc: "Scalable design systems, continuous fluid micro-interactions, and digital ergonomics inspired by Apple and Tesla design standards.",
+        cardInspect: "Inspect Module",
+        sectorsOverline: "03 / MULTI-INDUSTRY SOLUTIONS",
+        sectorsTitle: "Elite Software Across Industries.",
+        sectorsDesc: "Every industry operates under distinct compliance and performance standards. We tailor bespoke solutions addressing your core bottlenecks.",
+        telemetryOverline: "04 / VERIFICATION & TELEMETRY",
+        telemetryTitle: "Measurable Production Performance.",
+        slaAvailability: "SYSTEM AVAILABILITY",
+        slaAvailDesc: "Multi-region contractual SLA guaranteed",
+        slaLatency: "P99 RESPONSE TIME",
+        slaLatDesc: "Bare-metal optimization with zero bottlenecks",
+        slaTx: "ANNUAL TRANSACTIONS",
+        slaTxDesc: "Processed across enterprise clients",
+        slaVulnerabilities: "CRITICAL VULNERABILITIES",
+        slaVulnDesc: "Continuous Zero-Trust penetration audits",
+        facilitiesOverline: "05 / INFRASTRUCTURE & GLOBAL FOOTPRINT",
+        facilitiesTitle: "Global Hubs & Innovation Campuses.",
+        facilitiesDesc: "Our engineering campuses unite world-class engineers with direct dark-fiber links to the world's most critical data centers.",
+        ctaPreheader: "READY FOR THE NEXT GENERATION OF SOFTWARE?",
+        ctaTitle: "Let's turn your vision into a world-class system.",
+        ctaDesc: "Schedule an architecture advisory session with our principal engineers. We will analyze your specifications and build a definitive roadmap.",
+        ctaButton: "Start Project Consultation",
+        footerTagline: "We build solutions, powering your future. High-performance software engineering and next-generation cloud architecture.",
+        footerColServices: "Services",
+        footerColIndustries: "Industries",
+        footerColCompany: "Company",
+        modalStackTitle: "Core Tech Stack",
+        modalDeliverablesTitle: "Engineering Deliverables & SLA",
+        modalClose: "Close",
+        modalCta: "Request Quote for this Module",
+        drawerTitle: "Start Project",
+        formName: "Full Name or Company *",
+        formEmail: "Work Email *",
+        formSector: "Industry / Sector *",
+        formService: "Service Needed *",
+        formDetails: "Project Details",
+        formSubmit: "Submit Engineering Request"
+      }
+    };
+
+    let currentLanguage = 'es';
+
+    function setLanguage(lang) {
+      currentLanguage = lang;
+      const btnEs = document.getElementById('langBtnEs');
+      const btnEn = document.getElementById('langBtnEn');
+      if (lang === 'es') {
+        btnEs.className = "px-2.5 py-1 rounded-full transition-all duration-200 bg-brand-blue text-white shadow-xs font-bold";
+        btnEn.className = "px-2.5 py-1 rounded-full transition-all duration-200 text-slate-400 hover:text-white font-bold";
+      } else {
+        btnEn.className = "px-2.5 py-1 rounded-full transition-all duration-200 bg-brand-blue text-white shadow-xs font-bold";
+        btnEs.className = "px-2.5 py-1 rounded-full transition-all duration-200 text-slate-400 hover:text-white font-bold";
+      }
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang] && translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+    }
+
+    // Tesla Cursor
+    const cursorDot = document.getElementById('teslaCursorDot');
+    const cursorRing = document.getElementById('teslaCursorRing');
+    const ambientSpotlight = document.getElementById('ambientSpotlight');
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let ringX = mouseX;
+    let ringY = mouseY;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursorDot.style.left = `${mouseX}px`;
+      cursorDot.style.top = `${mouseY}px`;
+      ambientSpotlight.style.left = `${mouseX}px`;
+      ambientSpotlight.style.top = `${mouseY}px`;
+    });
+
+    function renderCursorPhysics() {
+      ringX += (mouseX - ringX) * 0.18;
+      ringY += (mouseY - ringY) * 0.18;
+      cursorRing.style.left = `${ringX}px`;
+      cursorRing.style.top = `${ringY}px`;
+      requestAnimationFrame(renderCursorPhysics);
+    }
+    requestAnimationFrame(renderCursorPhysics);
+
+    const interactiveElements = 'a, button, input, select, textarea, .liquid-glass, .liquid-glass-pill, [role="button"]';
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.closest(interactiveElements)) {
+        document.body.classList.add('cursor-hover-active');
+      }
+    });
+    document.addEventListener('mouseout', (e) => {
+      if (e.target.closest(interactiveElements)) {
+        document.body.classList.remove('cursor-hover-active');
+      }
+    });
+
+    // Particle Background
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const particleCount = 42;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = (Math.random() - 0.5) * 0.4;
+        this.radius = Math.random() * 1.5 + 0.8;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 130) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(37, 99, 235, ${0.18 * (1 - dist / 130)})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+        }
+
+        const mdx = particles[i].x - mouseX;
+        const mdy = particles[i].y - mouseY;
+        const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+        if (mdist < 150) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(mouseX, mouseY);
+          ctx.strokeStyle = `rgba(124, 58, 237, ${0.28 * (1 - mdist / 150)})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+      requestAnimationFrame(animateParticles);
+    }
+    requestAnimationFrame(animateParticles);
+
+    // Console Tabs
+    function switchConsoleTab(tab) {
+      const views = ['core', 'cloud', 'ai', 'security'];
+      views.forEach(v => {
+        const el = document.getElementById(`view${v.charAt(0).toUpperCase() + v.slice(1)}`);
+        const btn = document.getElementById(`tabBtn${v.charAt(0).toUpperCase() + v.slice(1)}`);
+        if (v === tab) {
+          el.classList.remove('hidden');
+          btn.className = "px-3 py-1 rounded-full bg-brand-blue text-white font-bold transition-all";
+          gsap.fromTo(el, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3 });
+        } else {
+          el.classList.add('hidden');
+          btn.className = "px-3 py-1 rounded-full text-slate-400 hover:text-white transition-all";
+        }
+      });
+    }
+
+    function simulateTelemetrySpike() {
+      const throughputEl = document.getElementById('hudThroughput');
+      const latencyEl = document.getElementById('hudLatency');
+      
+      gsap.to({ val: 148290 }, {
+        val: 312840,
+        duration: 1.2,
+        onUpdate: function() {
+          throughputEl.textContent = `${Math.floor(this.targets()[0].val).toLocaleString()} req/s`;
+        },
+        yoyo: true,
+        repeat: 1
+      });
+
+      gsap.to({ lat: 0.82 }, {
+        lat: 1.15,
+        duration: 0.8,
+        onUpdate: function() {
+          latencyEl.textContent = `${this.targets()[0].lat.toFixed(2)} ms`;
+        },
+        yoyo: true,
+        repeat: 1
+      });
+    }
+
+    // Sector Blueprints
+    const sectorData = {
+      fintech: {
+        tag: "FINANZAS & CRIPTOGRAFÍA ACID",
+        title: "Ecosistemas Financieros y Pagos de Alta Frecuencia",
+        desc: "Desarrollamos pasarelas de pago resilientes, sistemas de billeteras virtuales (wallets), conciliación contable autónoma y motores de detección de anomalías en milisegundos con total cumplimiento PCI-DSS.",
+        stat1: "99.999%",
+        stat2: "< 15 ms",
+        stat3: "PCI-DSS L1",
+        blueprints: [
+          "01 · API Gateway Distribuido (Kong / Envoy)",
+          "02 · Microservicios Event-Driven (Apache Kafka + Go)",
+          "03 · Base de Datos ACID Multi-Región (PostgreSQL + CockroachDB)",
+          "04 · Bóveda Criptográfica HSM & Tokens Efímeros"
+        ]
+      },
+      health: {
+        tag: "HEALTHTECH & INTEROPERABILIDAD HL7/FHIR",
+        title: "Sistemas Hospitalarios y Plataformas Clínicas",
+        desc: "Arquitecturas seguras para telemedicina, gestión de historiales médicos interoperables (FHIR), cifrado de datos de pacientes bajo estricto cumplimiento HIPAA y análisis predictivo asistido por IA.",
+        stat1: "100%",
+        stat2: "< 28 ms",
+        stat3: "HIPAA Compliant",
+        blueprints: [
+          "01 · Gateway de Ingesta Interoperable HL7/FHIR",
+          "02 · Cifrado Asimétrico Zero-Knowledge para Registros Médicos",
+          "03 · Sistema de Notificaciones de Emergencia con Failover",
+          "04 · Auditoría Inmutable de Acceso Clínico"
+        ]
+      },
+      logistics: {
+        tag: "CADENA DE SUMINISTRO & TELEMETRÍA IOT",
+        title: "Rastreo Autónomo y Optimización de Rutas",
+        desc: "Plataformas de visibilidad integral de flotas en tiempo real, ruteo dinámico con inteligencia espacial, control automatizado de inventarios y despacho inteligente con sincronización offline-first.",
+        stat1: "+500K",
+        stat2: "< 80 ms",
+        stat3: "Offline-First",
+        blueprints: [
+          "01 · Broker de Mensajería MQTT para Dispositivos IoT",
+          "02 · Algoritmos de Despacho y Ruteo Dinámico en Tiempo Real",
+          "03 · Bases Geoespaciales PostGIS de Alta Velocidad",
+          "04 · App de Conductor Nativa con Soporte 100% Offline"
+        ]
+      },
+      retail: {
+        tag: "COMERCIO MASIVO & ALTA CONCURRENCIA",
+        title: "Comercio Electrónico y Checkout Instantáneo",
+        desc: "Infraestructuras para millones de sesiones concurrentes durante campañas de alta demanda, motores de recomendación personalizados por IA, checkout en un solo clic y gestión de inventario en tiempo real.",
+        stat1: "120K",
+        stat2: "< 12 ms",
+        stat3: "Zero Downtime",
+        blueprints: [
+          "01 · Frontend en Next.js Edge Cache con Vercel / Cloudflare",
+          "02 · Carrito de Compras en Redis Cluster Distribuido",
+          "03 · Motor de Recomendaciones Vectoriales en Tiempo Real",
+          "04 · Pasarelas de Pago Multi-Adquirente con Reintentos Inteligentes"
+        ]
+      },
+      energy: {
+        tag: "INDUSTRIA 4.0 & TELEMETRÍA SCADA",
+        title: "Automatización Industrial y Monitoreo de Redes",
+        desc: "Dashboards web de control industrial y telemetría de sensores en milisegundos, algoritmos de mantenimiento predictivo y alertas tempranas para operaciones críticas de infraestructura.",
+        stat1: "1.2M",
+        stat2: "< 5 ms",
+        stat3: "Zero-Latency",
+        blueprints: [
+          "01 · Ingesta de Series de Tiempo (TimescaleDB / InfluxDB)",
+          "02 · WebSockets Bidireccionales para Monitoreo en Tiempo Real",
+          "03 · Modelo de Detección de Falla Predictiva en Borde (Edge)",
+          "04 · Protocolo Industrial OPC-UA / Modbus Conectado a la Nube"
+        ]
+      }
+    };
+
+    let activeSectorKey = 'fintech';
+
+    function switchSector(key) {
+      activeSectorKey = key;
+      const data = sectorData[key];
+      if (!data) return;
+
+      ['fintech', 'health', 'logistics', 'retail', 'energy'].forEach(k => {
+        const btn = document.getElementById(`sectorBtn_${k}`);
+        if (k === key) {
+          btn.className = "px-5 py-2.5 rounded-full font-mono text-xs font-bold transition-all bg-brand-blue text-white shadow-lg";
+        } else {
+          btn.className = "px-5 py-2.5 rounded-full font-mono text-xs font-bold transition-all liquid-glass-pill text-slate-400 hover:text-white";
+        }
+      });
+
+      const card = document.getElementById('sectorContentCard');
+      gsap.to(card, {
+        opacity: 0.4,
+        duration: 0.15,
+        onComplete: () => {
+          document.getElementById('sectorTag').textContent = data.tag;
+          document.getElementById('sectorHeading').textContent = data.title;
+          document.getElementById('sectorDescription').textContent = data.desc;
+          document.getElementById('sectorStat1').textContent = data.stat1;
+          document.getElementById('sectorStat2').textContent = data.stat2;
+          document.getElementById('sectorStat3').textContent = data.stat3;
+
+          const listEl = document.getElementById('sectorBlueprintList');
+          listEl.innerHTML = data.blueprints.map(bp => {
+            const parts = bp.split(' · ');
+            return `<div class="flex items-center gap-2 text-slate-300">
+              <span class="text-blue-400">${parts[0]}</span>
+              <span>${parts[1]}</span>
+            </div>`;
+          }).join('');
+
+          gsap.to(card, { opacity: 1, duration: 0.25 });
+        }
+      });
+    }
+
+    function openProjectDrawerWithSector() {
+      openProjectDrawer();
+      const select = document.getElementById('formSectorInput');
+      if (select) {
+        if (activeSectorKey === 'fintech') select.value = "Fintech & Finanzas";
+        if (activeSectorKey === 'health') select.value = "Healthtech & Salud";
+        if (activeSectorKey === 'logistics') select.value = "Logística & Transporte";
+        if (activeSectorKey === 'retail') select.value = "Retail & E-Commerce";
+        if (activeSectorKey === 'energy') select.value = "Industria & IoT";
+      }
+    }
+
+    // Sedes Switcher
+    function switchCampus(campus) {
+      const img = document.getElementById('headquartersImg');
+      const caption = document.getElementById('headquartersCaption');
+      const btnApex = document.getElementById('btnCampusApex');
+      const btnClean = document.getElementById('btnCampusPavilion');
+
+      if (campus === 'apex') {
+        img.src = "./assets/lexur_building_apex.png";
+        caption.textContent = "Sede Central Apex — Laboratorio de Cómputo Distribuido";
+        btnApex.className = "px-3.5 py-1.5 rounded-full bg-brand-blue text-white font-mono text-xs font-bold transition-all";
+        btnClean.className = "px-3.5 py-1.5 rounded-full liquid-glass-pill text-slate-400 hover:text-white font-mono text-xs font-bold transition-all";
+      } else {
+        img.src = "./assets/lexur_building_clean.png";
+        caption.textContent = "Pabellón de I+D — Centro de Innovación & Modelos Neuronales";
+        btnClean.className = "px-3.5 py-1.5 rounded-full bg-brand-blue text-white font-mono text-xs font-bold transition-all";
+        btnApex.className = "px-3.5 py-1.5 rounded-full liquid-glass-pill text-slate-400 hover:text-white font-mono text-xs font-bold transition-all";
+      }
+      gsap.fromTo(img, { scale: 0.96, opacity: 0.5 }, { scale: 1, opacity: 1, duration: 0.4 });
+    }
+
+    // Services Modal
+    const servicesDirectory = {
+      software: {
+        category: "01 · CORE PLATFORMS & BACKENDS",
+        title: "Desarrollo de Software a Medida",
+        desc: "Ingeniería de software de nivel empresarial. Diseñamos la arquitectura lógica, bases de datos optimizadas y APIs de alta densidad para soportar operaciones sin interrupciones. Cada línea de código es tipada estrictamente y sujeta a suites automatizadas de pruebas unitarias y de integración.",
+        stack: ["TypeScript", "Go (Golang)", "Rust", "Next.js", "PostgreSQL", "Docker"],
+        deliverables: [
+          "✓ Arquitectura de software modular desacoplada y documentada en OpenAPI",
+          "✓ Cobertura de pruebas automatizadas superior al 85% con pipelines CI/CD",
+          "✓ Tiempos de respuesta de API P99 inferiores a 25ms bajo alta concurrencia",
+          "✓ Transferencia completa de código fuente, propiedad intelectual y manuales de operación"
+        ]
+      },
+      cloud: {
+        category: "02 · DISTRIBUTED CLOUD MESH",
+        title: "Soluciones Cloud & DevOps de Misión Crítica",
+        desc: "Aprovechamos la infraestructura global de AWS, Google Cloud y Azure mediante contenedores y orquestación con Kubernetes. Implementamos infraestructura como código (Terraform / Pulumi) garantizando replicación instantánea y tolerancia a fallos zonales.",
+        stack: ["Kubernetes", "AWS EKS", "Google Cloud Run", "Terraform", "ArgoCD", "Prometheus"],
+        deliverables: [
+          "✓ Despliegues 'Zero-Downtime' con estrategias Blue/Green o Canary",
+          "✓ Monitoreo en tiempo real con alertas proactivas antes de que ocurra una degradación",
+          "✓ Reducción media de costos de nube de entre 25% y 40% mediante auto-escalado eficiente",
+          "✓ Respaldo automatizado y plan de recuperación ante desastres (RPO < 5min, RTO < 15min)"
+        ]
+      },
+      security: {
+        category: "03 · ZERO-TRUST & CYBERSECURITY",
+        title: "Seguridad y Confianza Blindada",
+        desc: "Incorporamos ciberseguridad desde el primer boceto de arquitectura. Implementamos el principio de privilegio mínimo (Zero-Trust), cifrado simétrico y asimétrico de última generación y auditorías de seguridad constantes para prevenir cualquier filtración de datos sensibles.",
+        stack: ["HashiCorp Vault", "WAF Cloudflare", "Trivy Scanner", "SonarQube", "OAuth2 / OIDC", "mTLS"],
+        deliverables: [
+          "✓ Blindaje criptográfico para datos en tránsito (TLS 1.3) y en reposo (AES-256)",
+          "✓ Escaneo de dependencias en cada Pull Request para eliminar CVEs antes de producción",
+          "✓ Asesoría y preparación técnica para certificaciones SOC 2 Tipo II, ISO 27001 y PCI-DSS",
+          "✓ Reporte formal de pruebas de penetración (pentest) ejecutadas por ingenieros certificados"
+        ]
+      },
+      ai: {
+        category: "04 · APPLIED NEURAL SYSTEMS",
+        title: "Innovación & IA Escalable",
+        desc: "Integramos capacidades de inteligencia artificial generativa y predictiva en los flujos medulares de tu empresa. Implementamos arquitecturas RAG que consultan tu documentación interna de forma segura y privada, sin compartir tus secretos industriales con terceros.",
+        stack: ["Python 3.12", "PyTorch", "Milvus / Pinecone", "FastAPI", "Ollama / vLLM", "LangGraph"],
+        deliverables: [
+          "✓ Agentes inteligentes capaces de ejecutar acciones y procesar datos no estructurados",
+          "✓ Respuestas fundamentadas en tus propias bases de datos con cita de fuentes verificable",
+          "✓ Aceleración de inferencia con TensorRT y reducción de costos por token",
+          "✓ Panel de auditoría de respuestas y alineamiento de seguridad para prevenir alucinaciones"
+        ]
+      },
+      fintech: {
+        category: "05 · TRANSACTIONAL ENGINES",
+        title: "Sistemas de Alta Concurrencia & Finanzas",
+        desc: "Construimos motores transaccionales que gestionan millones de operaciones sin pérdida de integridad ni inconsistencias de saldo. Utilizamos técnicas de particionamiento horizontal, memoria compartida y colas distribuidas para lograr latencias ultra-bajas.",
+        stack: ["Go", "Apache Kafka", "Redis Cluster", "CockroachDB", "gRPC", "Docker"],
+        deliverables: [
+          "✓ Integración directa con pasarelas de pago y redes interbancarias",
+          "✓ Garantía matemática ACID de no duplicidad de cobros ni transacciones huérfanas",
+          "✓ Motor de conciliación contable capaz de cruzar millones de registros en minutos",
+          "✓ Trazabilidad forense inmutable de cada transacción financiera"
+        ]
+      },
+      uiux: {
+        category: "06 · PRECISION HUMAN INTERFACES",
+        title: "Experiencia Digital & UI/UX de Precisión",
+        desc: "Creamos interfaces fluidas, limpias y altamente ergonómicas inspiradas en la estética y rendimiento de Apple y Tesla. Evitamos adornos innecesarios para enfocarnos en la claridad del dato, tipografía nítida y microinteracciones de 60/120 FPS que elevan la percepción de valor de tu producto.",
+        stack: ["Figma Design System", "Tailwind CSS v4", "GSAP 3", "React / Next.js", "SwiftUI", "Flutter"],
+        deliverables: [
+          "✓ Design System completo con design tokens multiplataforma listos para producción",
+          "✓ Prototipos interactivos testeados con usuarios reales antes de iniciar el código",
+          "✓ Rendimiento de Core Web Vitals perfecto (LCP < 1.2s, CLS 0, INP excelente)",
+          "✓ Cumplimiento estricto de accesibilidad WCAG 2.2 nivel AA"
+        ]
+      }
+    };
+
+    let activeServiceKey = 'software';
+
+    function openServiceModal(key) {
+      activeServiceKey = key;
+      const data = servicesDirectory[key];
+      if (!data) return;
+
+      document.getElementById('modalCategory').textContent = data.category;
+      document.getElementById('modalTitle').textContent = data.title;
+      document.getElementById('modalDescription').textContent = data.desc;
+
+      const stackContainer = document.getElementById('modalStackTags');
+      stackContainer.innerHTML = data.stack.map(s => 
+        `<span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-300 font-mono text-xs font-semibold border border-blue-500/20">${s}</span>`
+      ).join('');
+
+      const deliverablesContainer = document.getElementById('modalDeliverablesList');
+      deliverablesContainer.innerHTML = data.deliverables.map(d => 
+        `<li class="leading-relaxed">${d}</li>`
+      ).join('');
+
+      const modal = document.getElementById('serviceModal');
+      const card = document.getElementById('serviceModalCard');
+
+      modal.classList.remove('hidden');
+      gsap.to(modal, { opacity: 1, duration: 0.25 });
+      gsap.fromTo(card, 
+        { scale: 0.94, opacity: 0, y: 20 }, 
+        { scale: 1, opacity: 1, y: 0, duration: 0.35, ease: "back.out(1.4)" }
+      );
+    }
+
+    function closeServiceModal() {
+      const modal = document.getElementById('serviceModal');
+      const card = document.getElementById('serviceModalCard');
+
+      gsap.to(card, { scale: 0.95, opacity: 0, y: 15, duration: 0.2 });
+      gsap.to(modal, { 
+        opacity: 0, 
+        duration: 0.25, 
+        onComplete: () => { modal.classList.add('hidden'); }
+      });
+    }
+
+    function requestThisService() {
+      closeServiceModal();
+      openProjectDrawer();
+      const serviceSelect = document.getElementById('formServiceInput');
+      if (serviceSelect && servicesDirectory[activeServiceKey]) {
+        serviceSelect.value = servicesDirectory[activeServiceKey].title;
+      }
+    }
+
+    // Project Drawer
+    function openProjectDrawer() {
+      const overlay = document.getElementById('projectDrawerOverlay');
+      const content = document.getElementById('projectDrawerContent');
+
+      overlay.classList.remove('hidden');
+      gsap.to(overlay, { opacity: 1, duration: 0.3 });
+      gsap.fromTo(content, 
+        { x: "100%" }, 
+        { x: "0%", duration: 0.45, ease: "power3.out" }
+      );
+    }
+
+    function closeProjectDrawer() {
+      const overlay = document.getElementById('projectDrawerOverlay');
+      const content = document.getElementById('projectDrawerContent');
+
+      gsap.to(content, { x: "100%", duration: 0.35, ease: "power3.in" });
+      gsap.to(overlay, { 
+        opacity: 0, 
+        duration: 0.35, 
+        onComplete: () => { overlay.classList.add('hidden'); }
+      });
+    }
+
+    function handleProjectSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('formNameInput').value;
+      const email = document.getElementById('formEmailInput').value;
+      const sector = document.getElementById('formSectorInput').value;
+      const service = document.getElementById('formServiceInput').value;
+
+      alert(`¡Gracias por contactar a LEXUR, ${name}!
+
+Hemos registrado tu solicitud para el rubro [${sector}] en el servicio [${service}]. Un arquitecto principal revisará tus requerimientos y te contactará en ${email} en menos de 4 horas hábiles.`);
+      closeProjectDrawer();
+    }
+
+    function showPartnerDetail(name, capability) {
+      alert(`LEXUR PLATFORM INTEGRATION · ${name.toUpperCase()}
+
+Capacidad Certificada: ${capability}
+
+Nuestras soluciones cuentan con integración nativa y optimizada para producción con el ecosistema de ${name}.`);
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+        menu.classList.add('flex');
+        gsap.fromTo(menu, { opacity: 0 }, { opacity: 1, duration: 0.25 });
+      } else {
+        gsap.to(menu, {
+          opacity: 0,
+          duration: 0.2,
+          onComplete: () => {
+            menu.classList.add('hidden');
+            menu.classList.remove('flex');
+          }
+        });
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeServiceModal();
+        closeProjectDrawer();
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash;
+      if (hash.startsWith('#service-')) {
+        const key = hash.replace('#service-', '');
+        if (servicesDirectory[key]) openServiceModal(key);
+      } else if (hash === '#cotizar' || hash === '#contact' || hash === '#consultoria') {
+        openProjectDrawer();
+      }
+    });
+  </script>
+
+</body>
+</html>

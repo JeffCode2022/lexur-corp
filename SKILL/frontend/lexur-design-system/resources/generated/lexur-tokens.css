@@ -1,0 +1,283 @@
+/* AUTO-GENERADO por lexur-design-system/scripts/generate-tokens.mjs (v1.0.0). NO EDITAR A MANO.
+ * Uso (Tailwind v4): en globals.css ->  @import "tailwindcss";  @import "./lexur-tokens.css";
+ * Tema: <html data-theme="dark|light|system">. Dark es el default (dark-first).
+ */
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --lx-bg-canvas: #000000;
+  --lx-bg-surface-1: #0A0A0A;
+  --lx-bg-surface-2: #141414;
+  --lx-bg-surface-3: #1F1F1F;
+  --lx-bg-inverse: #FAFAFA;
+  --lx-border-subtle: #1A1A1A;
+  --lx-border-default: #2A2A2A;
+  --lx-border-strong: #404040;
+  --lx-border-control: #5E5E5E;
+  --lx-text-primary: #F5F5F5;
+  --lx-text-secondary: #A3A3A3;
+  --lx-text-tertiary: #808080;
+  --lx-text-disabled: #4D4D4D;
+  --lx-text-inverse: #0A0A0A;
+  --lx-text-on-accent: #FFFFFF;
+  --lx-accent-default: #2E6BFF;
+  --lx-accent-hover: #4A80FF;
+  --lx-accent-pressed: #2457D6;
+  --lx-accent-subtle: #0B1A3D;
+  --lx-accent-text: #6B9BFF;
+  --lx-status-success: #32D74B;
+  --lx-status-success-subtle: #0B2611;
+  --lx-status-warning: #FFD60A;
+  --lx-status-warning-subtle: #2B2402;
+  --lx-status-danger: #FF453A;
+  --lx-status-danger-subtle: #2E0E0C;
+  --lx-focus-ring: #2E6BFF;
+  --lx-overlay-scrim: #000000B8;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --lx-bg-canvas: #FFFFFF;
+  --lx-bg-surface-1: #FAFAFA;
+  --lx-bg-surface-2: #F2F2F2;
+  --lx-bg-surface-3: #E8E8E8;
+  --lx-bg-inverse: #0A0A0A;
+  --lx-border-subtle: #EFEFEF;
+  --lx-border-default: #E0E0E0;
+  --lx-border-strong: #C2C2C2;
+  --lx-border-control: #8F8F8F;
+  --lx-text-primary: #0A0A0A;
+  --lx-text-secondary: #525252;
+  --lx-text-tertiary: #6E6E6E;
+  --lx-text-disabled: #B3B3B3;
+  --lx-text-inverse: #FAFAFA;
+  --lx-text-on-accent: #FFFFFF;
+  --lx-accent-default: #0A5CFF;
+  --lx-accent-hover: #0050E6;
+  --lx-accent-pressed: #0042BF;
+  --lx-accent-subtle: #EAF0FF;
+  --lx-accent-text: #0A5CFF;
+  --lx-status-success: #1E7E34;
+  --lx-status-success-subtle: #E8F5EB;
+  --lx-status-warning: #A15C00;
+  --lx-status-warning-subtle: #FFF4E0;
+  --lx-status-danger: #D70015;
+  --lx-status-danger-subtle: #FFEBEC;
+  --lx-focus-ring: #0A5CFF;
+  --lx-overlay-scrim: #0000007A;
+}
+
+@media (prefers-color-scheme: light) {
+  [data-theme="system"] {
+    color-scheme: light;
+    --lx-bg-canvas: #FFFFFF;
+    --lx-bg-surface-1: #FAFAFA;
+    --lx-bg-surface-2: #F2F2F2;
+    --lx-bg-surface-3: #E8E8E8;
+    --lx-bg-inverse: #0A0A0A;
+    --lx-border-subtle: #EFEFEF;
+    --lx-border-default: #E0E0E0;
+    --lx-border-strong: #C2C2C2;
+    --lx-border-control: #8F8F8F;
+    --lx-text-primary: #0A0A0A;
+    --lx-text-secondary: #525252;
+    --lx-text-tertiary: #6E6E6E;
+    --lx-text-disabled: #B3B3B3;
+    --lx-text-inverse: #FAFAFA;
+    --lx-text-on-accent: #FFFFFF;
+    --lx-accent-default: #0A5CFF;
+    --lx-accent-hover: #0050E6;
+    --lx-accent-pressed: #0042BF;
+    --lx-accent-subtle: #EAF0FF;
+    --lx-accent-text: #0A5CFF;
+    --lx-status-success: #1E7E34;
+    --lx-status-success-subtle: #E8F5EB;
+    --lx-status-warning: #A15C00;
+    --lx-status-warning-subtle: #FFF4E0;
+    --lx-status-danger: #D70015;
+    --lx-status-danger-subtle: #FFEBEC;
+    --lx-focus-ring: #0A5CFF;
+    --lx-overlay-scrim: #0000007A;
+  }
+}
+
+:root {
+  --lx-space-0: 0px;
+  --lx-space-2: 2px;
+  --lx-space-4: 4px;
+  --lx-space-8: 8px;
+  --lx-space-12: 12px;
+  --lx-space-16: 16px;
+  --lx-space-20: 20px;
+  --lx-space-24: 24px;
+  --lx-space-32: 32px;
+  --lx-space-40: 40px;
+  --lx-space-48: 48px;
+  --lx-space-64: 64px;
+  --lx-space-80: 80px;
+  --lx-space-96: 96px;
+  --lx-space-128: 128px;
+  --lx-duration-instant: 80ms;
+  --lx-duration-fast: 150ms;
+  --lx-duration-base: 220ms;
+  --lx-duration-slow: 320ms;
+  --lx-duration-deliberate: 480ms;
+  --lx-z-base: 0;
+  --lx-z-sticky: 100;
+  --lx-z-dropdown: 200;
+  --lx-z-overlay: 300;
+  --lx-z-modal: 400;
+  --lx-z-toast: 500;
+  --lx-z-tooltip: 600;
+  --lx-layout-sidebar: 248px;
+  --lx-layout-sidebar-collapsed: 64px;
+  --lx-layout-header: 56px;
+  --lx-layout-content-max: 1200px;
+  --lx-layout-reading-max: 680px;
+  --lx-layout-gutter-mobile: 16px;
+  --lx-layout-gutter-desktop: 32px;
+}
+
+/* Bloquea la paleta y escala por defecto de Tailwind: SOLO tokens LEXUR. */
+@theme {
+  --color-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --font-sans: "Geist", Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: "Geist Mono", 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --radius-none: 0px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+  --text-display-xl: 4.5rem;
+  --text-display-xl--line-height: 4.75rem;
+  --text-display-xl--letter-spacing: -0.04em;
+  --text-display-xl--font-weight: 600;
+  --text-display: 3.5rem;
+  --text-display--line-height: 3.75rem;
+  --text-display--letter-spacing: -0.03em;
+  --text-display--font-weight: 600;
+  --text-h-1: 2.5rem;
+  --text-h-1--line-height: 2.75rem;
+  --text-h-1--letter-spacing: -0.025em;
+  --text-h-1--font-weight: 600;
+  --text-h-2: 2rem;
+  --text-h-2--line-height: 2.375rem;
+  --text-h-2--letter-spacing: -0.02em;
+  --text-h-2--font-weight: 600;
+  --text-h-3: 1.5rem;
+  --text-h-3--line-height: 1.875rem;
+  --text-h-3--letter-spacing: -0.015em;
+  --text-h-3--font-weight: 600;
+  --text-h-4: 1.25rem;
+  --text-h-4--line-height: 1.625rem;
+  --text-h-4--letter-spacing: -0.01em;
+  --text-h-4--font-weight: 600;
+  --text-body-lg: 1.0625rem;
+  --text-body-lg--line-height: 1.625rem;
+  --text-body-lg--letter-spacing: 0em;
+  --text-body-lg--font-weight: 400;
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.375rem;
+  --text-body--letter-spacing: 0em;
+  --text-body--font-weight: 400;
+  --text-body-sm: 0.8125rem;
+  --text-body-sm--line-height: 1.125rem;
+  --text-body-sm--letter-spacing: 0em;
+  --text-body-sm--font-weight: 400;
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.25rem;
+  --text-label--letter-spacing: 0em;
+  --text-label--font-weight: 500;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1rem;
+  --text-caption--letter-spacing: 0.01em;
+  --text-caption--font-weight: 500;
+  --text-overline: 0.6875rem;
+  --text-overline--line-height: 0.875rem;
+  --text-overline--letter-spacing: 0.08em;
+  --text-overline--font-weight: 600;
+  --text-metric: 3rem;
+  --text-metric--line-height: 3.25rem;
+  --text-metric--letter-spacing: -0.02em;
+  --text-metric--font-weight: 500;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-exit: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+}
+
+@theme inline {
+  --color-canvas: var(--lx-bg-canvas);
+  --color-surface-1: var(--lx-bg-surface-1);
+  --color-surface-2: var(--lx-bg-surface-2);
+  --color-surface-3: var(--lx-bg-surface-3);
+  --color-inverse: var(--lx-bg-inverse);
+  --color-line-subtle: var(--lx-border-subtle);
+  --color-line: var(--lx-border-default);
+  --color-line-strong: var(--lx-border-strong);
+  --color-line-control: var(--lx-border-control);
+  --color-fg: var(--lx-text-primary);
+  --color-fg-muted: var(--lx-text-secondary);
+  --color-fg-subtle: var(--lx-text-tertiary);
+  --color-fg-disabled: var(--lx-text-disabled);
+  --color-fg-inverse: var(--lx-text-inverse);
+  --color-on-accent: var(--lx-text-on-accent);
+  --color-accent: var(--lx-accent-default);
+  --color-accent-hover: var(--lx-accent-hover);
+  --color-accent-pressed: var(--lx-accent-pressed);
+  --color-accent-subtle: var(--lx-accent-subtle);
+  --color-accent-fg: var(--lx-accent-text);
+  --color-success: var(--lx-status-success);
+  --color-success-subtle: var(--lx-status-success-subtle);
+  --color-warning: var(--lx-status-warning);
+  --color-warning-subtle: var(--lx-status-warning-subtle);
+  --color-danger: var(--lx-status-danger);
+  --color-danger-subtle: var(--lx-status-danger-subtle);
+  --color-focus: var(--lx-focus-ring);
+  --color-scrim: var(--lx-overlay-scrim);
+}
+
+@layer base {
+  html {
+    background-color: var(--lx-bg-canvas);
+    color: var(--lx-text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background-color: var(--lx-accent-subtle);
+    color: var(--lx-text-primary);
+  }
+  :focus-visible {
+    outline: 2px solid var(--lx-focus-ring);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@utility numeric {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+@utility hairline-b {
+  border-bottom: 1px solid var(--lx-border-default);
+}
